@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   BrowserRouter as Router,
   Switch,
@@ -10,44 +10,55 @@ import { public_routes, private_routes } from "../../routes/appRoutes";
 import axios from "axios";
 
 const App = (props) => {
-  const { reducerAuthorization, setUserAccessToken, setIsAuthenticated } =
-    props;
-  const { isAuthenticated, authentication, userInfomation } =
+  const {
+    reducerAuthorization,
+    setUserAccessToken,
+    setIsAuthenticated,
+    getAllInformation,
+  } = props;
+  const { isAuthenticated, authentication, userInformation } =
     reducerAuthorization;
   const localAccessToken = localStorage.getItem("token");
+  const mountedRef = useRef(true);
 
   useEffect(() => {
-    console.log("hello world");
+    if (!mountedRef.current) return null;
+
+    console.log(`hello world ${localAccessToken}`);
     if (localAccessToken) {
       if (!authentication.accessToken) setUserAccessToken(localAccessToken);
     } else setUserAccessToken(null);
-    // get Token from both side (redux + localStorage)
+
+    return () => {
+      mountedRef.current = false;
+    };
   }, []);
 
   useEffect(() => {
+    if (!mountedRef.current) return null;
+
     if (authentication.accessToken) {
-      if (userInfomation.id === -1) {
-        axios
-          .get("http://localhost:5000/api/users/me", {
-            headers: { Authorization: `Bearer ${authentication.accessToken}` },
-          })
-          .then((result) => {
-            if (result.status === 200) {
-              console.log(result);
-              setIsAuthenticated(true);
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-            setIsAuthenticated(false);
-            localStorage.removeItem("token");
-          });
-      }
-    } else {
+      axios
+        .get("http://localhost:5000/api/users/me", {
+          headers: { Authorization: `Bearer ${authentication.accessToken}` },
+        })
+        .then((result) => {
+          if (result.status === 200) {
+            console.log(result);
+            setIsAuthenticated(true);
+            getAllInformation(result.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          setIsAuthenticated(false);
+          localStorage.removeItem("token");
+        });
+    }
+    if (!authentication.accessToken && !localAccessToken) {
       setIsAuthenticated(false);
       localStorage.removeItem("token");
     }
-    // get Token from both side (redux + localStorage)
   }, [authentication.accessToken]);
 
   return (
@@ -90,10 +101,6 @@ const App = (props) => {
               />
             );
           })}
-          {/* <Route path="/login" component={() => <LogIn />} />
-					<Route path="/register" component={() => <Register />} />
-
-					<PrivateRoute path="/" comp={() => <Dashboard />} /> */}
         </Switch>
       </Router>
     </div>
