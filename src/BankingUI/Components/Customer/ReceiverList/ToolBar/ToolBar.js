@@ -7,14 +7,14 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import "./ToolBar.css";
 
 const ToolBar = ({ handleShowFormModal }) => (
-  <Card.Header className="toolBar">
-    <span>YOUR RECEIVERS LIST</span>
-    <span>
-      <Button onClick={handleShowFormModal}>
-        <FontAwesomeIcon icon={faPlus} />
-      </Button>
-    </span>
-  </Card.Header>
+	<Card.Header className="toolBar">
+		<span>YOUR RECEIVERS LIST</span>
+		<span>
+			<Button onClick={handleShowFormModal}>
+				<FontAwesomeIcon icon={faPlus} />
+			</Button>
+		</span>
+	</Card.Header>
 );
 
 export default ToolBar;

@@ -7,40 +7,43 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faPowerOff } from "@fortawesome/free-solid-svg-icons";
 
 const Header = (props) => {
-  const { reducerAuthorization, reducerUserInformation, setIsAuthenticated } =
-    props;
-  const { name } = reducerUserInformation;
+	const {
+		reducerAuthorization,
+		reducerUserInformation,
+		setIsAuthenticated,
+	} = props;
+	const { name } = reducerUserInformation;
 
-  return (
-    <Navbar collapseOnSelect expand="lg" bg="info" variant="dark">
-      <Link to="/">
-        <Navbar.Brand href="/">INTERNET BANKING</Navbar.Brand>
-      </Link>
-      <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-      <Navbar.Collapse id="responsive-navbar-nav">
-        <Nav className="mr-auto">
-          <Navbar.Text className="text-light">
-            <Image src="./tic-tac-toe.png" className="avatar" roundedCircle />{" "}
-            <span className="text-dark bold">{name}</span>
-          </Navbar.Text>
-        </Nav>
-        <Nav>
-          <Nav.Link>
-            <Link to="/edit" className="text-light mr-2">
-              Edit profile
-            </Link>
-          </Nav.Link>
-          <Nav.Link>
-            <Link to="/games" className="text-light mr-2">
-              Games
-            </Link>
-          </Nav.Link>
-          <Nav.Link>
-            <Link to="/join" className="text-light mr-2">
-              Join Chat
-            </Link>
-          </Nav.Link>
-          {/* <NavDropdown
+	return (
+		<Navbar collapseOnSelect expand="lg" bg="info" variant="dark">
+			<Link to="/">
+				<Navbar.Brand href="/">INTERNET BANKING</Navbar.Brand>
+			</Link>
+			<Navbar.Toggle aria-controls="responsive-navbar-nav" />
+			<Navbar.Collapse id="responsive-navbar-nav">
+				<Nav className="mr-auto">
+					<Navbar.Text className="text-light">
+						<Image src="./tic-tac-toe.png" className="avatar" roundedCircle />{" "}
+						<span className="text-dark bold">{name}</span>
+					</Navbar.Text>
+				</Nav>
+				<Nav>
+					<Nav.Link>
+						<Link to="/edit" className="text-light mr-2">
+							Edit profile
+						</Link>
+					</Nav.Link>
+					<Nav.Link>
+						<Link to="/games" className="text-light mr-2">
+							Games
+						</Link>
+					</Nav.Link>
+					<Nav.Link>
+						<Link to="/join" className="text-light mr-2">
+							Join Chat
+						</Link>
+					</Nav.Link>
+					{/* <NavDropdown
 						title={<FontAwesomeIcon icon={faBell} />}
 						id="collasible-nav-dropdown"
 					>
@@ -54,22 +57,22 @@ const Header = (props) => {
 							Separated link
 						</NavDropdown.Item>
 					</NavDropdown> */}
-          <Button
-            eventKey={2}
-            variant="danger"
-            onClick={() => {
-              // console.log("helloworld");
-              localStorage.removeItem("token");
-              setIsAuthenticated(false);
-              // setUserToken("");
-            }}
-          >
-            <FontAwesomeIcon icon={faPowerOff} /> Logout
-          </Button>
-        </Nav>
-      </Navbar.Collapse>
-    </Navbar>
-  );
+					<Button
+						eventKey={2}
+						variant="danger"
+						onClick={() => {
+							// console.log("helloworld");
+							localStorage.removeItem("token");
+							setIsAuthenticated(false);
+							// setUserToken("");
+						}}
+					>
+						<FontAwesomeIcon icon={faPowerOff} /> Logout
+					</Button>
+				</Nav>
+			</Navbar.Collapse>
+		</Navbar>
+	);
 };
 
 export default Header;
