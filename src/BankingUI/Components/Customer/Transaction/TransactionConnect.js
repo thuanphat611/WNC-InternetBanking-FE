@@ -5,12 +5,14 @@ import {
 	UserInformationActionCreators,
 } from "../../../../redux/actions/index";
 import Transaction from "./Transaction";
+
 const mapStateToProps = (state) => {
 	return {
 		reducerAuthorization: state.reducerAuthorization,
 		reducerUserInformation: state.reducerUserInformation,
 	};
 };
+
 const mapDispatchToProps = {
 	setUserAccessToken: AuthorizationActionCreators.setUserAccessToken,
 	setIsAuthenticated: AuthorizationActionCreators.setIsAuthenticated,
@@ -18,5 +20,7 @@ const mapDispatchToProps = {
 	getAllInformation: UserInformationActionCreators.getAllInformation,
 	updateUserInfo: UserInformationActionCreators.updateUserInfo,
 };
+
 export default withRouter(
-	
+	connect(mapStateToProps, mapDispatchToProps)(Transaction)
+);
