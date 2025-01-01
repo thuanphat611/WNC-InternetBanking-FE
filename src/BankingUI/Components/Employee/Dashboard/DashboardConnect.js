@@ -4,16 +4,16 @@ import { UserInformationActionCreators } from "../../../../redux/actions/index";
 import Dashboard from "./Dashboard";
 
 const mapStateToProps = (state) => {
-  return {
-    reducerAuthorization: state.reducerAuthorization,
-    reducerUserInformation: state.reducerUserInformation,
-  };
+	return {
+		reducerAuthorization: state.reducerAuthorization,
+		reducerUserInformation: state.reducerUserInformation,
+	};
 };
 
 const mapDispatchToProps = {
-  getAllInformation: UserInformationActionCreators.getAllInformation,
+	getAllInformation: UserInformationActionCreators.getAllInformation,
 };
 
 export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(Dashboard)
+	connect(mapStateToProps, mapDispatchToProps)(Dashboard)
 );

@@ -1,22 +1,22 @@
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import {
-  // AuthorizationActionCreators,
-  UserInformationActionCreators,
+	// AuthorizationActionCreators,
+	UserInformationActionCreators,
 } from "../../../../redux/actions/index";
 import NewCustomerForm from "./NewCustomerForm";
 
 const mapStateToProps = (state) => {
-  return {
-    reducerAuthorization: state.reducerAuthorization,
-    reducerUserInformation: state.reducerUserInformation,
-  };
+	return {
+		reducerAuthorization: state.reducerAuthorization,
+		reducerUserInformation: state.reducerUserInformation,
+	};
 };
 
 const mapDispatchToProps = {
-  updateUserInfo: UserInformationActionCreators.updateUserInfo,
+	updateUserInfo: UserInformationActionCreators.updateUserInfo,
 };
 
 export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(NewCustomerForm)
+	connect(mapStateToProps, mapDispatchToProps)(NewCustomerForm)
 );
