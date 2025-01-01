@@ -1,13 +1,11 @@
 import React, { useRef, useEffect } from "react";
 import { Col, Row, Button, Card, Container } from "react-bootstrap";
 import { Link } from "react-router-dom";
-// import axios from "axios";
 
 import "./Dashboard.css";
 
 const Dashboard = (props) => {
-  const { reducerAuthorization, reducerUserInformation } = props;
-  const { authentication } = reducerAuthorization;
+  const { reducerUserInformation } = props;
   const { balance, name } = reducerUserInformation.data;
   const mountedRef = useRef(true);
 
@@ -29,7 +27,7 @@ const Dashboard = (props) => {
       <Row>
         <Col md={{ span: 6, offset: 3 }} lg={6}>
           <Card className="text-center" className="mt-3 text-center">
-            <Card.Header>ADMIN DASHBOARD</Card.Header>
+            <Card.Header>DASHBOARD</Card.Header>
             <Card.Body>
               <Card.Title>
                 Xin chào,{" "}
