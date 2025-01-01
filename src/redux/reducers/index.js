@@ -4,7 +4,7 @@ import reducerUserInformation from "./userInformation.reducer";
 import reducerUserTransactions from "./userTransactionsInformation.reducer";
 
 export default combineReducers({
-  reducerAuthorization,
-  reducerUserInformation,
-  reducerUserTransactions,
+	reducerAuthorization,
+	reducerUserInformation,
+	reducerUserTransactions,
 });
