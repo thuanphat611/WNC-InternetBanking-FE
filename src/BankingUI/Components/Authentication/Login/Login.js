@@ -53,6 +53,7 @@ const LogIn = (props) => {
     const reCaptchaValue = true;
     event.preventDefault();
     if (form.checkValidity() === false || !reCaptchaValue) {
+      if (!reCaptchaValue) setFormError(true, "Captcha is invalid, try again!");
       event.stopPropagation();
     } else {
       setFormVariables({ ...formVariables, isLoading: true });
