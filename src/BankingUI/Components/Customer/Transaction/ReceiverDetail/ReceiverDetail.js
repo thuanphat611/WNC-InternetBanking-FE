@@ -9,7 +9,6 @@ import AlertBox from "../../../Others/AlertBox/AlertBox";
 
 const ReceiverDetail = (props) => {
   const {
-    receiversData,
     formVariables,
     setFormVariables,
     accessToken,
@@ -18,13 +17,14 @@ const ReceiverDetail = (props) => {
   } = props;
   const [validated, setValidated] = useState(false);
   const [renderOption, setRenderOption] = useState("component-0");
+  let receiversData = props.receiversData.filter((item) => item.bankId === 0);
 
   // Hàm lấy tên người dùng theo accountNumber, gọi qua API
   const getThisUserName = async (accountNumber, bankId) => {
     console.log(accountNumber, bankId);
 
-    setFormVariables({ ...formVariables, name: "WAITING..." });
     if (bankId !== -1 && accountNumber !== "") {
+      setFormVariables({ ...setFormVariables, name: "WAITING..." });
       const name = await axios
         .get(`/api/users/bank/${bankId}/users/${accountNumber}`)
         .then((result) => {
@@ -103,6 +103,7 @@ const ReceiverDetail = (props) => {
                     Bank
                   </Form.Text>
                   <Form.Control
+                    disabled
                     size="sm"
                     as="select"
                     name="bankId"
@@ -206,9 +207,7 @@ const ReceiverDetail = (props) => {
 
   return (
     <>
-      <h5>
-        Step 1: Add your receiver information or choose from the table below
-      </h5>
+      <h5>Bước 1: Nhập thông tin người cần nhắc nợ (cùng ngân hàng)</h5>
       <Nav
         fill
         variant="tabs"
@@ -218,10 +217,10 @@ const ReceiverDetail = (props) => {
         }}
       >
         <Nav.Item>
-          <Nav.Link eventKey="component-0">Add new receiver</Nav.Link>
+          <Nav.Link eventKey="component-0">Thông tin mới</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link eventKey="component-1">From receivers list</Nav.Link>
+          <Nav.Link eventKey="component-1">Từ danh sách</Nav.Link>
         </Nav.Item>
       </Nav>
       <hr />
