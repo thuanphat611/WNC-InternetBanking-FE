@@ -5,7 +5,6 @@ import {
   Redirect,
   Route,
 } from "react-router-dom";
-import { notification } from "antd";
 
 import {
   public_routes,
@@ -27,107 +26,42 @@ const App = (props) => {
     setRole,
     getAllReceivers,
     getAllTransactions,
-    setUserRefreshToken,
   } = props;
   const { isAuthenticated, authentication } = reducerAuthorization;
   const { role } = authentication;
   const localAccessToken = localStorage.getItem("token");
-  const localRefreshToken = localStorage.getItem("refreshToken");
   const mountedRef = useRef(true);
 
   useEffect(() => {
+    console.log(process.env.REACT_APP_BASE_URL);
     if (!mountedRef.current) return null;
+
+    if (localAccessToken) {
+      if (!authentication.accessToken) setUserAccessToken(localAccessToken);
+    } else setUserAccessToken(null);
 
     return () => {
       mountedRef.current = false;
     };
   }, []);
 
-  // --- CONFIG AXIOS ---
-  axios.defaults.baseURL = "http://localhost:5000";
+  axios.defaults.baseURL =
+    process.env.REACT_APP_BASE_URL || "http://localhost:5000";
   axios.defaults.headers.common[
     "Authorization"
   ] = `Bearer ${authentication.accessToken}`;
-  // axios.defaults.timeout = 15000;
 
-  // https://medium.com/@monkov/react-using-axios-interceptor-for-token-refreshing-1477a4d5fc26
-  axios.interceptors.response.use(
-    (response) => {
-      return response;
-    },
-    (err) => {
-      console.log(err.response);
-      if (
-        err.response.data.message === "Invalid username or password!" ||
-        err.response.data.from === "LOGIN"
-      )
-        return err.response.data;
-
-      return new Promise((resolve, reject) => {
-        const originalReq = err.config;
-
-        if (
-          err.response.status === 401 &&
-          err.config &&
-          !err.config.__isRetryRequest &&
-          err.response.data.message !== "Invalid username or password!"
-        ) {
-          originalReq._retry = true;
-
-          let res = fetch("http://localhost:5000/api/auth/refresh", {
-            method: "POST",
-            mode: "cors",
-            cache: "no-cache",
-            credentials: "same-origin",
-            headers: {
-              "Content-Type": "application/json",
-              Device: "device",
-              Token: localStorage.getItem("token"),
-            },
-            redirect: "follow",
-            referrer: "no-referrer",
-            body: JSON.stringify({
-              accessToken: localStorage.getItem("token"),
-              refreshToken: localStorage.getItem("refreshToken"),
-            }),
-          })
-            .then((res) => res.json())
-            .then((res) => {
-              console.log(res);
-              originalReq.headers[
-                "Authorization"
-              ] = `Bearer ${res.accessToken}`;
-              originalReq.headers["Device"] = "device";
-              localStorage.setItem("token", res.accessToken);
-              setUserAccessToken(res.accessToken);
-
-              return axios(originalReq);
-            });
-
-          resolve(res);
-        }
-
-        return Promise.reject(err);
-      });
-    }
-  );
-
-  useEffect(() => {
-    if (!mountedRef.current) return null;
-
-    console.log(localAccessToken);
-    if (localAccessToken && localRefreshToken) {
-      if (!authentication.accessToken || !authentication.refreshToken) {
-        setUserAccessToken(localAccessToken);
-        setUserRefreshToken(localRefreshToken);
-      }
-    } else {
-      setUserAccessToken(null);
-      setUserRefreshToken(null);
-      localStorage.removeItem("token");
-      localStorage.removeItem("refreshToken");
-    }
-  }, [localAccessToken, localRefreshToken]);
+  // TODO: Gọi tới refresh token
+  // useEffect(() => {
+  // 	let interval;
+  // 	console.log(isAuthenticated, authentication.accessToken);
+  // 	if (isAuthenticated !== false && authentication.accessToken !== "") {
+  // 		interval = setInterval(() => {
+  // 			console.log("This will run 5 seconds!");
+  // 		}, 5000);
+  // 	}
+  // 	return () => clearInterval(interval);
+  // }, [isAuthenticated, authentication.accessToken]);
 
   useEffect(() => {
     if (!mountedRef.current) return null;
@@ -141,23 +75,20 @@ const App = (props) => {
             setIsAuthenticated(true);
             getAllInformation(result.data);
             getAllReceivers(authentication.accessToken);
+            // getAllTransactions(authentication.accessToken);
           }
         })
         .catch((err) => {
           console.log(err);
           setIsAuthenticated(false);
-          setUserAccessToken(null);
-          setUserRefreshToken(null);
+          setUserAccessToken("");
           localStorage.removeItem("token");
-          localStorage.removeItem("refreshToken");
         });
     }
     if (!authentication.accessToken && !localAccessToken) {
       setIsAuthenticated(false);
-      setUserAccessToken(null);
-      setUserRefreshToken(null);
+      setUserAccessToken("");
       localStorage.removeItem("token");
-      localStorage.removeItem("refreshToken");
     }
   }, [authentication.accessToken]);
 
