@@ -56,6 +56,12 @@ const DebtsFilter = (props) => {
         });
         break;
       }
+      case "paid": {
+        emptyList = debtsData.filter((item) => {
+          return item.status === "paid";
+        });
+        break;
+      }
     }
     return emptyList;
   };
@@ -112,6 +118,7 @@ const DebtsFilter = (props) => {
             let nameToShow = "";
             let moneyType, moneyDetail, transactionType, badgeName;
             let isSentByThisUser = true;
+            let isPaid = item.status === "paid";
             if (item.receivedUserId === currentUser.accountNumber) {
               isSentByThisUser = false;
               nameToShow = item.sentUserName;
@@ -143,7 +150,7 @@ const DebtsFilter = (props) => {
                 <hr />
                 <span>{dateToShow}</span>
                 <span className="float-right">
-                  {!isSentByThisUser && (
+                  {!isSentByThisUser && !isPaid && (
                     <Button
                       variant="success"
                       className="mr-3"
@@ -153,13 +160,15 @@ const DebtsFilter = (props) => {
                       <FontAwesomeIcon icon={faMoneyBill} />
                     </Button>
                   )}
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => moveNextStep(item, "delete")}
-                  >
-                    <FontAwesomeIcon icon={faTrash} />
-                  </Button>
+                  {!isPaid && (
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => moveNextStep(item, "delete")}
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </Button>
+                  )}
                 </span>
               </Alert>
             );
