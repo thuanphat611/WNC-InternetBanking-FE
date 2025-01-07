@@ -67,6 +67,10 @@ const App = (props) => {
       )
         return err.response.data;
 
+      if (err.response.status !== 401) {
+        return err.response.data;
+      }
+
       return new Promise((resolve, reject) => {
         const originalReq = err.config;
 
@@ -78,7 +82,7 @@ const App = (props) => {
         ) {
           originalReq._retry = true;
 
-          let res = fetch(`${apiURL}/api/auth/refresh`, {
+          let res = fetch("http://localhost:5000/api/auth/refresh", {
             method: "POST",
             mode: "cors",
             cache: "no-cache",
@@ -117,6 +121,7 @@ const App = (props) => {
   );
 
   // --- GETTING NOTIFICATION && LONG POLLING WITH SERVER
+  let isGettingAList = true;
   let isQueryingNotification = true;
 
   useEffect(() => {
@@ -125,6 +130,7 @@ const App = (props) => {
 
     return () => {
       mountedRef.current = false;
+      isGettingAList = false;
       isQueryingNotification = false;
       console.log("isLoading: ", isQueryingNotification);
     };
