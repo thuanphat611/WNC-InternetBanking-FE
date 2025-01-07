@@ -92,8 +92,8 @@ const Header = (props) => {
             </Link>
           </Nav.Link>
           <Nav.Link>
-            <Link to="/games" className="text-light mr-2">
-              Games
+            <Link to="/statistics" className="text-light mr-2">
+              Statistics
             </Link>
           </Nav.Link>
           <Nav.Link>
