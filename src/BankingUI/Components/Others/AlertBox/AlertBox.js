@@ -4,7 +4,7 @@ import propTypes from "prop-types";
 
 const AlertBox = ({ alertTypes, alertHeading, alertMessage }) => {
 	if (!alertHeading) {
-		alertHeading = alertTypes === "danger" ? "ERROR FOUND!" : "CONGRATULATION!";
+		alertHeading = alertTypes === "danger" ? "ERROR FOUND!" : "SUCCESS!";
 	}
 
 	return (

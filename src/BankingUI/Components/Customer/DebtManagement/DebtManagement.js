@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Container, Col, Card, Row, Nav, Button, Alert } from "react-bootstrap";
+import { Container, Col, Card, Row, Nav } from "react-bootstrap";
 import axios from "axios";
 
 import AlertBox from "../../Others/AlertBox/AlertBox";
@@ -9,13 +9,9 @@ import moneyFormatter from "../../HelperFunctions/moneyFormatter";
 import DebtFilter from "./DebtFilter/DebtFilter";
 
 const DebtManagement = (props) => {
-  const {
-    reducerAuthorization,
-    reducerUserInformation,
-    reducerUserTransactions,
-  } = props;
+  const { reducerAuthorization, reducerUserInformation } = props;
   const currentUser = reducerUserInformation.data;
-  const [renderOption, setRenderOption] = useState("pending-mine");
+  const [renderOption, setRenderOption] = useState("pending-theirs");
   const [debtsData, setDebtsData] = useState([]);
   const [step, setStep] = useState("debt-list");
   const mountedRef = useRef(true);
@@ -25,16 +21,17 @@ const DebtManagement = (props) => {
 
     let isGettingAList = true;
     getList(isGettingAList);
-
     return () => {
       mountedRef.current = false;
       isGettingAList = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getList = async (isGettingAList) => {
+    console.log(currentUser);
     await axios
-      .get("/api/debt/history")
+      .get(`/api/protected/dept-reminder/send/${currentUser.accountNumber}`)
       .then((result) => result.data.data)
       .then((result) => {
         if (isGettingAList) {
@@ -54,25 +51,30 @@ const DebtManagement = (props) => {
       <Row>
         <Col md={{ span: 5, offset: 3 }} lg={6}>
           <Card className="mt-3">
-            <Card.Header className="toolBar">QUẢN LÝ NỢ</Card.Header>
+            <Card.Header className="toolBar">DEBT MANAGEMENT</Card.Header>
             <Card.Body>
               <Nav
                 fill
                 justify
                 variant="tabs"
-                defaultActiveKey="pending-mine"
+                defaultActiveKey="pending-theirs"
                 onSelect={(selectedKey) => {
                   setRenderOption(selectedKey);
                 }}
               >
                 <Nav.Item>
-                  <Nav.Link eventKey="pending-mine">Nhắc nợ của bạn</Nav.Link>
+                  <Nav.Link eventKey="pending-theirs">
+                    Debt reminder Received
+                  </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                  <Nav.Link eventKey="pending-theirs">Nhắc nợ gửi đến</Nav.Link>
+                  <Nav.Link eventKey="pending-mine">
+                    Your debt reminder
+                  </Nav.Link>
                 </Nav.Item>
+
                 <Nav.Item>
-                  <Nav.Link eventKey="paid">Hoàn tất</Nav.Link>
+                  <Nav.Link eventKey="paid">Completed</Nav.Link>
                 </Nav.Item>
               </Nav>
               <DebtFilter

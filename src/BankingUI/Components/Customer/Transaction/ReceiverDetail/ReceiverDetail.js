@@ -9,6 +9,7 @@ import AlertBox from "../../../Others/AlertBox/AlertBox";
 
 const ReceiverDetail = (props) => {
   const {
+    receiversData,
     formVariables,
     setFormVariables,
     accessToken,
@@ -17,21 +18,20 @@ const ReceiverDetail = (props) => {
   } = props;
   const [validated, setValidated] = useState(false);
   const [renderOption, setRenderOption] = useState("component-0");
-  let receiversData = props.receiversData.filter((item) => item.bankId === 0);
 
   // Hàm lấy tên người dùng theo accountNumber, gọi qua API
   const getThisUserName = async (accountNumber, bankId) => {
     console.log(accountNumber, bankId);
 
+    setFormVariables({ ...formVariables, name: "WAITING..." });
     if (bankId !== -1 && accountNumber !== "") {
-      setFormVariables({ ...setFormVariables, name: "WAITING..." });
       const name = await axios
-        .get(`/api/users/bank/${bankId}/users/${accountNumber}`)
+        .get(`/api/protected/customer/bank/${bankId}/users/${accountNumber}`)
         .then((result) => {
           if (result.data.name) return result.data.name;
-          return "KHONG TIM THAY";
+          return "NOT FOUND";
         })
-        .catch((err) => "KHONG TIM THAY");
+        .catch((err) => "NOT FOUND");
       console.log(accountNumber, bankId);
       await setFormVariables({
         ...formVariables,
@@ -53,14 +53,16 @@ const ReceiverDetail = (props) => {
     event.preventDefault();
     if (
       form.checkValidity() === false ||
-      formVariables.name == "" ||
-      formVariables.name == "KHONG TIM THAY"
+      formVariables.name === "" ||
+      formVariables.name === "NOT FOUND" ||
+      formVariables.name === "WAITING..."
     ) {
       event.stopPropagation();
     } else {
       if (
         formVariables.name === "" ||
-        formVariables.name === "KHONG TIM THAY" ||
+        formVariables.name === "NOT FOUND" ||
+        formVariables.name === "WAITING..." ||
         formVariables.accountNumber === "" ||
         formVariables.bankId === -1
       ) {
@@ -77,10 +79,133 @@ const ReceiverDetail = (props) => {
       case "component-0":
         return (
           <Form noValidate validated={validated} onSubmit={handleSubmit}>
-            <Form.Group>
+            <Form.Group className="d-flex justify-content-center">
               {/* <Form.Label className="font-weight-bold">ID and UserName</Form.Label> */}
-              <Row>
-                <Col>
+              <Col lg={8}>
+                <Form.Text className="text-muted font-weight-bold">
+                  Account Number
+                </Form.Text>
+                <Form.Control
+                  required
+                  type="text"
+                  name="accountNumber"
+                  value={formVariables.accountNumber}
+                  onChange={(e) => handleChange(e)}
+                  onBlur={() =>
+                    getThisUserName(
+                      formVariables.accountNumber,
+                      formVariables.bankId
+                    )
+                  }
+                />
+                <Form.Text className="text-muted font-weight-bold">
+                  Bank
+                </Form.Text>
+                <Form.Control
+                  as="select"
+                  name="bankId"
+                  value={formVariables.bankId}
+                  onChange={(e) => handleChange(e)}
+                  onBlur={() =>
+                    getThisUserName(
+                      formVariables.accountNumber,
+                      formVariables.bankId
+                    )
+                  }
+                >
+                  <option value={-1}></option>
+                  <option value={0}>DOMLand Bank</option>
+                  <option value={1}>Ngân hàng Ba Tê</option>
+                  <option value={2}>BAOSON Bank</option>
+                </Form.Control>
+                <Form.Text className="text-muted font-weight-bold">
+                  Full name
+                </Form.Text>
+                <Form.Control
+                  required
+                  type="text"
+                  name="name"
+                  value={formVariables.name}
+                  onChange={(e) => handleChange(e)}
+                  isInvalid={
+                    formVariables.name === "" ||
+                    formVariables.name === "NOT FOUND"
+                  }
+                  disabled
+                />
+              </Col>
+            </Form.Group>
+            <Button variant="primary" type="submit" className="mt-3">
+              Next
+            </Button>
+          </Form>
+        );
+      case "component-1":
+        if (receiversData.length !== 0) {
+          return (
+            <Table responsive="sm" striped bordered hover>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Bank name</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {receiversData.map((receiver, index) => {
+                  console.log(receiver);
+                  return (
+                    <tr key={index}>
+                      <td>{receiver.receiverAccountId}</td>
+                      <td>{receiver.nickName}</td>
+                      <td>
+                        {receiver.bankId === 0
+                          ? "DOMLand Bank"
+                          : receiver.bankId === 1
+                          ? "Ngân hàng Ba Tê"
+                          : "BAOSON Bank"}
+                      </td>
+                      <td className="action">
+                        <Button
+                          variant="success"
+                          size="sm"
+                          onClick={() => {
+                            console.log(formVariables);
+                            getThisUserName(
+                              receiver.receiverAccountId,
+                              receiver.bankId
+                            );
+                            setStep(2);
+                          }}
+                        >
+                          <FontAwesomeIcon icon={faForward} />
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </Table>
+          );
+        } else
+          return (
+            <>
+              <AlertBox
+                alertTypes="info"
+                alertHeading="Info"
+                alertMessage="You currently don't have any recipients"
+              />
+              <Link to="/receivers">Go to receivers form</Link>
+            </>
+          );
+      default:
+        return (
+          <Form noValidate validated={validated} onSubmit={handleSubmit}>
+            <Form.Group className="d-flex justify-content-center">
+              {/* <Form.Label className="font-weight-bold">ID and UserName</Form.Label> */}
+              <Col>
+                <Col lg={8}>
                   <Form.Text className="text-muted font-weight-bold">
                     Account Number
                   </Form.Text>
@@ -103,8 +228,6 @@ const ReceiverDetail = (props) => {
                     Bank
                   </Form.Text>
                   <Form.Control
-                    disabled
-                    size="sm"
                     as="select"
                     name="bankId"
                     value={formVariables.bankId}
@@ -117,97 +240,41 @@ const ReceiverDetail = (props) => {
                     }
                   >
                     <option value={-1}></option>
-                    <option value={0}>SAPHASAN Bank</option>
+                    <option value={0}>DOMLand Bank</option>
                     <option value={1}>Ngân hàng Ba Tê</option>
                     <option value={2}>BAOSON Bank</option>
                   </Form.Control>
                 </Col>
-              </Row>
-              <Form.Text className="text-muted font-weight-bold">
-                Full name
-              </Form.Text>
-              <Form.Control
-                required
-                type="text"
-                name="name"
-                value={formVariables.name}
-                onChange={(e) => handleChange(e)}
-                isInvalid={
-                  formVariables.name === "" ||
-                  formVariables.name === "KHONG TIM THAY"
-                }
-                disabled
-              />
+                <Form.Text className="text-muted font-weight-bold">
+                  Full name
+                </Form.Text>
+                <Form.Control
+                  required
+                  type="text"
+                  name="name"
+                  value={formVariables.name}
+                  onChange={(e) => handleChange(e)}
+                  isInvalid={
+                    formVariables.name === "" ||
+                    formVariables.name === "NOT FOUND"
+                  }
+                  disabled
+                />
+              </Col>
             </Form.Group>
             <Button variant="primary" type="submit">
               Next
             </Button>
           </Form>
         );
-      case "component-1":
-        if (receiversData.length !== 0) {
-          return (
-            <Table responsive="sm" striped bordered hover>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Name</th>
-                  <th>Bank name</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {receiversData.map((receiver, index) => {
-                  return (
-                    <tr key={index}>
-                      <td>{receiver.accountNumber}</td>
-                      <td>{receiver.savedName}</td>
-                      <td>
-                        {receiver.bankId === 0
-                          ? "SAPHASAN Bank"
-                          : receiver.bankId === 1
-                          ? "Ngân hàng Ba Tê"
-                          : "BAOSON Bank"}
-                      </td>
-                      <td className="action">
-                        <Button
-                          variant="success"
-                          size="sm"
-                          onClick={() => {
-                            console.log(formVariables);
-                            getThisUserName(
-                              receiver.accountNumber,
-                              receiver.bankId
-                            );
-                            setStep(2);
-                          }}
-                        >
-                          <FontAwesomeIcon icon={faForward} />
-                        </Button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </Table>
-          );
-        } else
-          return (
-            <>
-              <AlertBox
-                alertTypes="success"
-                alertHeading="Xin chào!"
-                alertMessage="Hiện tại bạn chưa có người nhận nào, hãy thêm để dễ thao tác hơn!"
-              />
-              <Link to="/receivers">Go to receivers form</Link>
-            </>
-          );
     }
   };
 
   return (
     <>
-      <h5>Bước 1: Nhập thông tin người cần nhắc nợ (cùng ngân hàng)</h5>
+      <h5 style={{ fontSize: "16px" }}>
+        Step 1: Add your receiver information or choose from the table below
+      </h5>
       <Nav
         fill
         variant="tabs"
@@ -217,10 +284,10 @@ const ReceiverDetail = (props) => {
         }}
       >
         <Nav.Item>
-          <Nav.Link eventKey="component-0">Thông tin mới</Nav.Link>
+          <Nav.Link eventKey="component-0">Add new receiver</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link eventKey="component-1">Từ danh sách</Nav.Link>
+          <Nav.Link eventKey="component-1">From receivers list</Nav.Link>
         </Nav.Item>
       </Nav>
       <hr />

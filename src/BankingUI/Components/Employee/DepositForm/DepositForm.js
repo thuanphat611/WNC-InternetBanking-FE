@@ -8,6 +8,7 @@ import AlertBox from "../../Others/AlertBox/AlertBox";
 const PayInForm = (props) => {
   const { reducerAuthorization, reducerUserInformation } = props;
   const { accessToken } = reducerAuthorization.authentication;
+  const { id } = reducerUserInformation.data;
   const [validated, setValidated] = useState(false);
 
   const [formVariables, setFormVariables] = useState({
@@ -58,15 +59,12 @@ const PayInForm = (props) => {
       console.log(formVariables);
       setFormVariables({ ...formVariables, isLoading: true });
       await axios
-        .post("/api/admin/deposit", {
-          receivedUserId: formVariables.accountNumber,
-          receivedUserName: formVariables.name,
-          receivedBankId: +formVariables.bankId,
+        .post("/api/protected/transactions/deposit", {
+          serviceProviderId: id,
+          receiverAccountNumber: formVariables.accountNumber,
           amount: +formVariables.amount,
-          content: formVariables.content,
         })
         .then((result) => {
-          console.log();
           if (result.status === 200) setFormError(null, "Nạp tiền thành công");
         })
         .catch((err) => {
@@ -88,7 +86,7 @@ const PayInForm = (props) => {
       setFormVariables({ ...setFormVariables, name: "WAITING..." });
 
       const name = await axios
-        .get(`/api/users/bank/${bankId}/users/${accountNumber}`)
+        .get(`/api/protected/customer/bank/${bankId}/users/${accountNumber}`)
         .then((result) => {
           if (result.data.name) return result.data.name;
           return "KHONG TIM THAY";
@@ -107,10 +105,10 @@ const PayInForm = (props) => {
   return (
     <Container fluid>
       <Row>
-        <Col md={{ span: 6, offset: 3 }} lg={6}>
+        <Col md={{ span: 6, offset: 3 }} lg={5}>
           <Card className="text-center" className="mt-3">
             <Card.Header className="text-center toolbar">
-              <span>NẠP TIỀN CHO KHÁCH HÀNG</span>
+              <span>DEPOSIT MONEY FOR CUSTOMER</span>
             </Card.Header>
             <Card.Body>
               {renderAlert()}
@@ -155,7 +153,7 @@ const PayInForm = (props) => {
                         disabled
                       >
                         <option value={-1}></option>
-                        <option value={0}>SAPHASAN Bank</option>
+                        <option value={0}>DOMLand Bank</option>
                         <option value={1}>Ngân hàng Ba Tê</option>
                         <option value={2}>BAOSON Bank</option>
                       </Form.Control>
@@ -190,7 +188,7 @@ const PayInForm = (props) => {
                     isInvalid={formVariables.amount % 1000 !== 0}
                   />
                   <Form.Control.Feedback type="invalid">
-                    Số tiền phải chia hết cho 1.000đ.
+                    The amount must be divisible by 1,000 VND.
                   </Form.Control.Feedback>
                   <Form.Text className="text-muted font-weight-bold">
                     Content
@@ -204,18 +202,14 @@ const PayInForm = (props) => {
                     onChange={(e) => handleChange(e)}
                     isInvalid={formVariables.content === ""}
                   />
-                  <Form.Control.Feedback type="invalid">
-                    Hãy điền lời nhắn phù hợp.
-                  </Form.Control.Feedback>
                 </Form.Group>
-                <Button variant="primary" type="submit">
-                  Next
-                </Button>
+                <Col className="d-flex justify-content-center align-items-center">
+                  <Button variant="primary" type="submit" className="mt-3">
+                    Confirm
+                  </Button>
+                </Col>
               </Form>
             </Card.Body>
-            <Card.Footer className="text-muted text-center">
-              HCMUS - PTUDWNC - 2019
-            </Card.Footer>
           </Card>
         </Col>
       </Row>

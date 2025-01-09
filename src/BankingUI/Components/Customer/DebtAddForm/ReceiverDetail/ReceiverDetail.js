@@ -8,25 +8,19 @@ import axios from "axios";
 import AlertBox from "../../../Others/AlertBox/AlertBox";
 
 const ReceiverDetail = (props) => {
-  const {
-    receiversData,
-    formVariables,
-    setFormVariables,
-    accessToken,
-    setStep,
-    setFormError,
-  } = props;
+  const { formVariables, setFormVariables, setStep, setFormError } = props;
   const [validated, setValidated] = useState(false);
   const [renderOption, setRenderOption] = useState("component-0");
+  let receiversData = props.receiversData.filter((item) => item.bankId === 0);
 
   // Hàm lấy tên người dùng theo accountNumber, gọi qua API
   const getThisUserName = async (accountNumber, bankId) => {
     console.log(accountNumber, bankId);
 
-    setFormVariables({ ...formVariables, name: "WAITING..." });
     if (bankId !== -1 && accountNumber !== "") {
+      setFormVariables({ ...setFormVariables, name: "WAITING..." });
       const name = await axios
-        .get(`/api/users/bank/${bankId}/users/${accountNumber}`)
+        .get(`/api/protected/customer/bank/${bankId}/users/${accountNumber}`)
         .then((result) => {
           if (result.data.name) return result.data.name;
           return "KHONG TIM THAY";
@@ -53,16 +47,14 @@ const ReceiverDetail = (props) => {
     event.preventDefault();
     if (
       form.checkValidity() === false ||
-      formVariables.name == "" ||
-      formVariables.name == "KHONG TIM THAY" ||
-      formVariables.name === "WAITING..."
+      formVariables.name === "" ||
+      formVariables.name === "KHONG TIM THAY"
     ) {
       event.stopPropagation();
     } else {
       if (
         formVariables.name === "" ||
         formVariables.name === "KHONG TIM THAY" ||
-        formVariables.name === "WAITING..." ||
         formVariables.accountNumber === "" ||
         formVariables.bankId === -1
       ) {
@@ -79,9 +71,9 @@ const ReceiverDetail = (props) => {
       case "component-0":
         return (
           <Form noValidate validated={validated} onSubmit={handleSubmit}>
-            <Form.Group>
+            <Form.Group className="d-flex justify-content-center">
               {/* <Form.Label className="font-weight-bold">ID and UserName</Form.Label> */}
-              <Row>
+              <Col lg={8}>
                 <Col>
                   <Form.Text className="text-muted font-weight-bold">
                     Account Number
@@ -105,6 +97,7 @@ const ReceiverDetail = (props) => {
                     Bank
                   </Form.Text>
                   <Form.Control
+                    disabled
                     size="sm"
                     as="select"
                     name="bankId"
@@ -118,29 +111,29 @@ const ReceiverDetail = (props) => {
                     }
                   >
                     <option value={-1}></option>
-                    <option value={0}>SAPHASAN Bank</option>
+                    <option value={0}>DOMLand Bank</option>
                     <option value={1}>Ngân hàng Ba Tê</option>
                     <option value={2}>BAOSON Bank</option>
                   </Form.Control>
                 </Col>
-              </Row>
-              <Form.Text className="text-muted font-weight-bold">
-                Full name
-              </Form.Text>
-              <Form.Control
-                required
-                type="text"
-                name="name"
-                value={formVariables.name}
-                onChange={(e) => handleChange(e)}
-                isInvalid={
-                  formVariables.name === "" ||
-                  formVariables.name === "KHONG TIM THAY"
-                }
-                disabled
-              />
+                <Form.Text className="text-muted font-weight-bold">
+                  Full name
+                </Form.Text>
+                <Form.Control
+                  required
+                  type="text"
+                  name="name"
+                  value={formVariables.name}
+                  onChange={(e) => handleChange(e)}
+                  isInvalid={
+                    formVariables.name === "" ||
+                    formVariables.name === "KHONG TIM THAY"
+                  }
+                  disabled
+                />
+              </Col>
             </Form.Group>
-            <Button variant="primary" type="submit">
+            <Button variant="primary" type="submit" className="mt-3">
               Next
             </Button>
           </Form>
@@ -151,7 +144,7 @@ const ReceiverDetail = (props) => {
             <Table responsive="sm" striped bordered hover>
               <thead>
                 <tr>
-                  <th>#</th>
+                  <th>Account number</th>
                   <th>Name</th>
                   <th>Bank name</th>
                   <th></th>
@@ -165,7 +158,7 @@ const ReceiverDetail = (props) => {
                       <td>{receiver.savedName}</td>
                       <td>
                         {receiver.bankId === 0
-                          ? "SAPHASAN Bank"
+                          ? "DOMLand Bank"
                           : receiver.bankId === 1
                           ? "Ngân hàng Ba Tê"
                           : "BAOSON Bank"}
@@ -196,20 +189,91 @@ const ReceiverDetail = (props) => {
           return (
             <>
               <AlertBox
-                alertTypes="success"
-                alertHeading="Xin chào!"
-                alertMessage="Hiện tại bạn chưa có người nhận nào, hãy thêm để dễ thao tác hơn!"
+                alertTypes="info"
+                alertHeading="Info"
+                alertMessage="You currently don't have any recipients."
               />
               <Link to="/receivers">Go to receivers form</Link>
             </>
           );
+      default:
+        return (
+          <Form noValidate validated={validated} onSubmit={handleSubmit}>
+            <Form.Group>
+              {/* <Form.Label className="font-weight-bold">ID and UserName</Form.Label> */}
+              <Row>
+                <Col>
+                  <Form.Text className="text-muted font-weight-bold">
+                    Account Number
+                  </Form.Text>
+                  <Form.Control
+                    required
+                    type="text"
+                    name="accountNumber"
+                    value={formVariables.accountNumber}
+                    onChange={(e) => handleChange(e)}
+                    onBlur={() =>
+                      getThisUserName(
+                        formVariables.accountNumber,
+                        formVariables.bankId
+                      )
+                    }
+                  />
+                </Col>
+                <Col>
+                  <Form.Text className="text-muted font-weight-bold">
+                    Bank
+                  </Form.Text>
+                  <Form.Control
+                    disabled
+                    size="sm"
+                    as="select"
+                    name="bankId"
+                    value={formVariables.bankId}
+                    onChange={(e) => handleChange(e)}
+                    onBlur={() =>
+                      getThisUserName(
+                        formVariables.accountNumber,
+                        formVariables.bankId
+                      )
+                    }
+                  >
+                    <option value={-1}></option>
+                    <option value={0}>DOMLand Bank</option>
+                    <option value={1}>Ngân hàng Ba Tê</option>
+                    <option value={2}>BAOSON Bank</option>
+                  </Form.Control>
+                </Col>
+              </Row>
+              <Form.Text className="text-muted font-weight-bold">
+                Full name
+              </Form.Text>
+              <Form.Control
+                required
+                type="text"
+                name="name"
+                value={formVariables.name}
+                onChange={(e) => handleChange(e)}
+                isInvalid={
+                  formVariables.name === "" ||
+                  formVariables.name === "KHONG TIM THAY"
+                }
+                disabled
+              />
+            </Form.Group>
+            <Button variant="primary" type="submit" className="mt-3">
+              Next
+            </Button>
+          </Form>
+        );
     }
   };
 
   return (
     <>
-      <h5>
-        Step 1: Add your receiver information or choose from the table below
+      <h5 style={{ fontSize: "16px" }}>
+        Step 1: Enter the information of the person to remind for debt (within
+        the same bank)
       </h5>
       <Nav
         fill
@@ -220,10 +284,10 @@ const ReceiverDetail = (props) => {
         }}
       >
         <Nav.Item>
-          <Nav.Link eventKey="component-0">Add new receiver</Nav.Link>
+          <Nav.Link eventkey="component-0">New</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link eventKey="component-1">From receivers list</Nav.Link>
+          <Nav.Link eventkey="component-1">From list</Nav.Link>
         </Nav.Item>
       </Nav>
       <hr />

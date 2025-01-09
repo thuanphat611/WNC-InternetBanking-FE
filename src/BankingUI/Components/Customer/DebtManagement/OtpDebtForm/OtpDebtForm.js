@@ -1,16 +1,12 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Button, Badge, Alert, Form, Spinner } from "react-bootstrap";
+import React, { useState, useRef } from "react";
+import { Button, Col, Form, Spinner } from "react-bootstrap";
 import axios from "axios";
 
 import AlertBox from "../../../Others/AlertBox/AlertBox";
 
 import moneyFormatter from "../../../HelperFunctions/moneyFormatter";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faTrash,
-  faBackward,
-  faMoneyBill,
-} from "@fortawesome/free-solid-svg-icons";
+import { faBackward } from "@fortawesome/free-solid-svg-icons";
 
 // Hiện render form khi bấm vào nút thanh toán
 const OtpDebtForm = ({
@@ -19,6 +15,8 @@ const OtpDebtForm = ({
   handleChange,
   setStep,
   setFormError,
+  currentUser,
+  sendingForm,
 }) => {
   const [validated, setValidated] = useState(false);
 
@@ -29,32 +27,31 @@ const OtpDebtForm = ({
     if (form.checkValidity() === false) {
       event.stopPropagation();
     } else {
-      console.log(formVariables);
+      setFormVariables({ ...formVariables, isLoading: true });
       await axios
-        .post(
-          "/api/transaction/verify-code",
-          {
-            code: formVariables.otpCode,
-          },
-          {
-            headers: {
-              transactionId: formVariables.transactionId,
-              debtId: formVariables.debtId,
-            },
-          }
-        )
-        .then((result) => {
+        .post("/otp/verify", {
+          otp: formVariables.otpCode,
+          email: currentUser.email,
+        })
+        .then(async (result) => {
           setFormVariables({ ...formVariables, isLoading: false });
           if (result.status === 200) {
+            console.log(formVariables);
+            await axios.post(`/api/protected/transactions`, {
+              senderAccountNumber: sendingForm.senderAccountNumber,
+              receiverAccountNumber: sendingForm.receiverAccountNumber,
+              amount: sendingForm.amount,
+              description: formVariables.content,
+              type: "dept",
+            });
             setFormError(
               null,
-              `Thanh toán nợ thành công! Tuyệt vời! 
-							Bạn sẽ quay lại danh sách nợ trong 5 giây nữa...`
+              `Debt payment successful! Awesome!
+              You will return to the debt list in 3 seconds...`
             );
             setTimeout(() => {
-              setStep("debt-list");
-              setFormError(null, "");
-            }, 5000);
+              window.location.reload();
+            }, 3000);
           }
         })
         .catch((err) => {
@@ -68,7 +65,7 @@ const OtpDebtForm = ({
 
   return (
     <>
-      <h5 className="text-center">XÁC NHẬN OTP</h5>
+      <h5 className="text-center">VERIFY OTP</h5>
       {formVariables.message && (
         <AlertBox
           alertTypes={formVariables.error}
@@ -77,17 +74,17 @@ const OtpDebtForm = ({
       )}
       <p className="information">
         <dl className="row">
-          <dt className="col-sm-4">Số tiền:</dt>
+          <dt className="col-sm-4">Amount:</dt>
           <dd className="col-sm-7">
             {moneyFormatter.format(formVariables.amount)}
           </dd>
-          <dt className="col-sm-4">Người tạo nợ:</dt>
+          <dt className="col-sm-4">Created by:</dt>
           <dd className="col-sm-7">{formVariables.sentUserName}</dd>
-          <dt className="col-sm-4">Người nợ</dt>
+          <dt className="col-sm-4">Debtor:</dt>
           <dd className="col-sm-7">{formVariables.receivedUserName}</dd>
-          <dt className="col-sm-4">Nội dung:</dt>
+          <dt className="col-sm-4">Description:</dt>
           <dd className="col-sm-7">"{formVariables.debtContent}"</dd>
-          <dt className="col-sm-4">Ngày nhắc:</dt>
+          <dt className="col-sm-4">Created at:</dt>
           <dd className="col-sm-7">
             {new Date(formVariables.createdAt).toDateString()}
           </dd>
@@ -107,25 +104,27 @@ const OtpDebtForm = ({
             isInvalid={formVariables.otpCode === ""}
           />
           <Form.Control.Feedback type="invalid">
-            Give your receiver a message to know
+            Enter OTP code sent to your email
           </Form.Control.Feedback>
         </Form.Group>
-        <Button
-          variant="primary-outline"
-          type="button"
-          onClick={() => setStep("pay-debt")}
-        >
-          <FontAwesomeIcon icon={faBackward} /> Back
-        </Button>
-        <Button variant="success" type="submit" className="float-right">
-          {false ? (
-            <>
-              <Spinner animation="border" size="sm" /> Waiting...
-            </>
-          ) : (
-            <>Thanh toán</>
-          )}
-        </Button>
+        <Col className="d-flex justify-content-center gap-3 mt-3">
+          <Button
+            variant="primary-outline"
+            type="button"
+            onClick={() => setStep("pay-debt")}
+          >
+            <FontAwesomeIcon icon={faBackward} /> Back
+          </Button>
+          <Button variant="success" type="submit" className="float-right">
+            {false ? (
+              <>
+                <Spinner animation="border" size="sm" /> Waiting...
+              </>
+            ) : (
+              <>Confirm payment</>
+            )}
+          </Button>
+        </Col>
       </Form>
     </>
   );

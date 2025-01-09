@@ -24,12 +24,14 @@ const CustomerTransaction = (props) => {
   const mountedRef = useRef(true);
 
   const [currentUser, setCurrentUser] = useState({
+    id: "",
     accountNumber: "",
     balance: 0,
     name: "",
     transactions: [],
   });
 
+  console.log(currentUser);
   useEffect(() => {
     if (!mountedRef.current) return null;
 
@@ -51,13 +53,13 @@ const CustomerTransaction = (props) => {
 
   const getList = async (isGettingAList) => {
     await axios
-      .get(`/api/admin/all-users`)
-      .then((result) => result.data)
+      .get(`/api/protected/customer`)
+      // .then((result) => result.data)
       .then((result) => {
+        console.log(result);
         if (isGettingAList) {
-          result.reverse();
-          console.log(result);
-          setUsersData(result);
+          result.data = result.data.map((item) => ({ ...item, key: item.id }));
+          setUsersData(result.data.reverse());
           isGettingAList = false;
         }
       })
@@ -66,11 +68,12 @@ const CustomerTransaction = (props) => {
       });
   };
 
+  console.log(currentUser);
   const getUserTransaction = async () => {
     await axios
-      .post(`/api/admin/user-history-transactions`, {
-        accountNumber: currentUser.accountNumber,
-      })
+      .get(
+        `/api/protected/transactions/transaction/account/${currentUser.id}`
+      )
       .then((result) => {
         return result.data.data;
       })
@@ -93,7 +96,7 @@ const CustomerTransaction = (props) => {
       <Row>
         <Col md={{ span: 5, offset: 3 }} lg={6}>
           <Card className="mt-3">
-            <Card.Header className="toolBar">DANH SÁCH NGƯỜI DÙNG</Card.Header>
+            <Card.Header className="toolBar">CUSTOMER LIST</Card.Header>
             <Card.Body>
               {step === 0 && (
                 <CustomersList

@@ -1,25 +1,19 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Button, Badge, Alert, Form, Spinner } from "react-bootstrap";
-import axios from "axios";
+import React, { useState } from "react";
+import { Button, Badge, Alert, Col } from "react-bootstrap";
 
 import AlertBox from "../../../Others/AlertBox/AlertBox";
 
 import moneyFormatter from "../../../HelperFunctions/moneyFormatter";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faTrash,
-  faBackward,
-  faMoneyBill,
-} from "@fortawesome/free-solid-svg-icons";
+import { faTrash, faMoneyBill } from "@fortawesome/free-solid-svg-icons";
 
 import PayDebtForm from "../PayDebtForm/PayDebtForm";
 import OtpDebtForm from "../OtpDebtForm/OtpDebtForm";
 import DeleteDebtForm from "../DeleteDebtForm/DeleteDebtForm";
 
 const DebtsFilter = (props) => {
-  const { accessToken, currentUser, debtsData, filterType, step, setStep } =
-    props;
-  const [validated, setValidated] = useState(false);
+  const { currentUser, debtsData, filterType, step, setStep } = props;
+  // const [validated, setValidated] = useState(false);
   const [formVariables, setFormVariables] = useState({
     debtId: "",
     sentUserName: "",
@@ -35,14 +29,22 @@ const DebtsFilter = (props) => {
     message: "",
   });
 
+  const [sendingForm, setSendingForm] = useState({
+    senderAccountNumber: "",
+    receiverAccountNumber: "",
+    amount: 0,
+    description: "",
+    type: "dept",
+  });
+
   const filterData = () => {
     let emptyList = [];
     switch (filterType) {
       case "pending-mine": {
         emptyList = debtsData.filter((item) => {
           return (
-            item.status === "pending" &&
-            item.sentUserId === currentUser.accountNumber
+            item.status === "Chưa thanh toán" &&
+            item.senderAccountId === currentUser.accountNumber
           );
         });
         break;
@@ -50,15 +52,21 @@ const DebtsFilter = (props) => {
       case "pending-theirs": {
         emptyList = debtsData.filter((item) => {
           return (
-            item.status === "pending" &&
-            item.receivedUserId === currentUser.accountNumber
+            item.status === "Chưa thanh toán" &&
+            item.receiverAccountId === currentUser.accountNumber
           );
         });
         break;
       }
       case "paid": {
         emptyList = debtsData.filter((item) => {
-          return item.status === "paid";
+          return item.status === "Đã thanh toán";
+        });
+        break;
+      }
+      default: {
+        emptyList = debtsData.filter((item) => {
+          return item.status === "Đã thanh toán";
         });
         break;
       }
@@ -67,6 +75,7 @@ const DebtsFilter = (props) => {
   };
 
   const filteredData = filterData();
+  console.log(filteredData);
 
   // Update giá trị điền vào Form
   const handleChange = (e) => {
@@ -87,14 +96,21 @@ const DebtsFilter = (props) => {
   const moveNextStep = (item, type) => {
     console.log(item);
     if (item.debtId !== "") {
-      formVariables["debtId"] = item.debtId;
-      formVariables["sentUserName"] = item.sentUserName.toUpperCase();
-      formVariables["receivedUserName"] = item.receivedUserName.toUpperCase();
-      formVariables["debtContent"] = item.debtContent;
+      formVariables["id"] = item.id;
+      formVariables["sentUserName"] = item.senderUserName.toUpperCase();
+      formVariables["receivedUserName"] = item.receiverUserName.toUpperCase();
+      formVariables["debtContent"] = item.description;
       formVariables["createdAt"] = item.createdAt;
       formVariables["amount"] = item.amount;
       formVariables["transactionId"] = item.transactionId;
     }
+    sendingForm["senderAccountNumber"] = item.receiverAccountId;
+    sendingForm["receiverAccountNumber"] = item.senderAccountId;
+    sendingForm["amount"] = item.amount;
+    formVariables["description"] = item.description;
+
+    setSendingForm({ ...sendingForm });
+    console.log("sendingForm", sendingForm);
     setFormVariables({ ...formVariables });
     console.log(formVariables);
     if (type === "delete") setStep(1);
@@ -106,70 +122,78 @@ const DebtsFilter = (props) => {
     if (filteredData.length === 0) {
       return (
         <AlertBox
-          alertTypes="success"
-          alertHeading="Xin chào!"
-          alertMessage="Chưa có nhắc nợ nào trong thời gian này!"
+          alertTypes="info"
+          alertHeading="Info"
+          alertMessage="No recent debt reminders!"
         />
       );
     } else {
       return (
         <div>
           {filteredData.map((item, index) => {
+            console.log(item);
             let nameToShow = "";
             let moneyType, moneyDetail, transactionType, badgeName;
             let isSentByThisUser = true;
-            let isPaid = item.status === "paid";
-            if (item.receivedUserId === currentUser.accountNumber) {
+            let isPaid = item.status === "Paid";
+            if (item.receiverAccountId === currentUser.accountNumber) {
               isSentByThisUser = false;
-              nameToShow = item.sentUserName;
+              nameToShow = item.senderUserName;
               moneyType = "danger";
               moneyDetail = moneyFormatter.format(item.amount);
               transactionType = "danger";
-              badgeName = "Đang nợ";
+              badgeName = "Owing";
             } else {
-              nameToShow = item.receivedUserName;
+              nameToShow = item.receiverUserName;
               moneyType = "success";
               moneyDetail = moneyFormatter.format(item.amount);
               transactionType = "success";
-              badgeName = "Nhắc nợ cho";
+              badgeName = "Your payment reminder";
             }
             const badgeType = item.isDebt ? "secondary" : "primary";
             const dateToShow = new Date(item.createdAt).toDateString();
             return (
               <Alert variant={transactionType} key={index}>
-                <Badge variant={badgeType}>{badgeName}</Badge>{" "}
-                <span>
+                <Badge className="text-md text-black" variant={badgeType}>
+                  {badgeName} {filterType === "paid" && " - COMPLETED"}
+                </Badge>{" "}
+                <Col className="d-flex align-items-center justify-content-between">
                   <span>
                     <b>{nameToShow.toUpperCase()}</b>
                   </span>
-                  <Badge variant={moneyType} className="float-right money">
+                  <Badge
+                    variant={moneyType}
+                    className="text-black float-right money"
+                  >
                     {moneyDetail}
                   </Badge>
-                </span>
+                </Col>
                 <p>{item.debtContent}</p>
                 <hr />
-                <span>{dateToShow}</span>
-                <span className="float-right">
-                  {!isSentByThisUser && !isPaid && (
-                    <Button
-                      variant="success"
-                      className="mr-3"
-                      size="sm"
-                      onClick={() => moveNextStep(item, "pay")}
-                    >
-                      <FontAwesomeIcon icon={faMoneyBill} />
-                    </Button>
-                  )}
-                  {!isPaid && (
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => moveNextStep(item, "delete")}
-                    >
-                      <FontAwesomeIcon icon={faTrash} />
-                    </Button>
-                  )}
-                </span>
+                <Col className="d-flex justify-content-between">
+                  <span>{dateToShow}</span>
+                  <span className="float-right">
+                    {!isSentByThisUser && !isPaid && (
+                      <Button
+                        variant="success"
+                        className="mr-3"
+                        size="sm"
+                        onClick={() => moveNextStep(item, "pay")}
+                      >
+                        <FontAwesomeIcon icon={faMoneyBill} />
+                      </Button>
+                    )}
+                    {!isPaid && filterType === "pending-mine" && (
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => moveNextStep(item, "delete")}
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </Button>
+                    )}
+                  </span>
+                </Col>
               </Alert>
             );
           })}
@@ -188,15 +212,19 @@ const DebtsFilter = (props) => {
           setStep={setStep}
           handleChange={handleChange}
           setFormError={setFormError}
+          currentUser={currentUser}
         />
       )}
       {step === "pay-debt" && (
         <PayDebtForm
           formVariables={formVariables}
           setFormVariables={setFormVariables}
+          setSendingForm={setSendingForm}
           setStep={setStep}
           handleChange={handleChange}
           setFormError={setFormError}
+          currentUser={currentUser}
+          sendingForm={sendingForm}
         />
       )}
       {step === "get-otp-debt" && (
@@ -206,6 +234,8 @@ const DebtsFilter = (props) => {
           setStep={setStep}
           handleChange={handleChange}
           setFormError={setFormError}
+          currentUser={currentUser}
+          sendingForm={sendingForm}
         />
       )}
     </div>

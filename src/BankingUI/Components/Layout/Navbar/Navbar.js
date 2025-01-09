@@ -1,14 +1,6 @@
 import React from "react";
 import "./Navbar.css";
-import { Avatar } from "antd";
-import {
-  Navbar,
-  Nav,
-  NavDropdown,
-  Button,
-  Image,
-  Badge,
-} from "react-bootstrap";
+import { Navbar, Nav, Button, Image } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faPowerOff } from "@fortawesome/free-solid-svg-icons";
@@ -28,43 +20,53 @@ const Header = (props) => {
   };
 
   const CustomerNavbar = () => (
-    <Navbar collapseOnSelect expand="lg" bg="info" variant="dark" href="#x">
-      <a to="/" href="#x">
-        <Navbar.Brand>
-          <Link to="/" className="text-light mr-2">
-            SAPHASAN Bank
-          </Link>
-        </Navbar.Brand>
-      </a>
+    <Navbar
+      collapseOnSelect
+      expand="lg"
+      bg="info"
+      variant="dark"
+      className="px-4 py-2"
+    >
+      <Navbar.Brand as={Link} to="/" className="text-light">
+        DOMLand Bank
+      </Navbar.Brand>
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-      <Navbar.Collapse id="responsive-navbar-nav">
-        <Nav className="mr-auto">
-          <Navbar.Text className="text-light">
-            <Image src="./tic-tac-toe.png" className="avatar" roundedCircle />{" "}
-          </Navbar.Text>
-        </Nav>
+      <Navbar.Collapse
+        id="responsive-navbar-nav"
+        className="d-flex justify-content-between align-items-center"
+      >
         <Nav>
-          <Nav.Link>
-            <Link to="/edit" className="text-light mr-2">
-              Sửa thông tin
-            </Link>
+          {/* <Navbar.Text>
+            <Image src="./tic-tac-toe.png" className="avatar" roundedCircle />
+          </Navbar.Text> */}
+          <Nav.Link
+            as={Link}
+            to="/edit"
+            className="text-light d-flex align-items-center"
+          >
+            Edit Information
           </Nav.Link>
-          <Nav.Link>
-            <Link to="/debt-management" className="text-light mr-2">
-              Quản lý nợ
-            </Link>
+          <Nav.Link
+            as={Link}
+            to="/debt-management"
+            className="text-light d-flex align-items-center"
+          >
+            Debt Management
           </Nav.Link>
-          <Nav.Link>
-            <Link to="/transaction-management" className="text-light mr-2">
-              Quản lý giao dịch
-            </Link>
+          <Nav.Link
+            as={Link}
+            to="/transaction-management"
+            className="text-light d-flex align-items-center"
+          >
+            Transaction Management
           </Nav.Link>
-          <Nav.Link>
-            <Link to="/notification" className="text-light mr-2">
-              <FontAwesomeIcon icon={faBell} />
-            </Link>
+        </Nav>
+
+        <Nav className="d-flex align-items-center">
+          <Nav.Link as={Link} to="/notification" className="text-light">
+            <FontAwesomeIcon icon={faBell} />
           </Nav.Link>
-          <Button eventKey={2} variant="danger" onClick={handleLogout}>
+          <Button eventkey={2} variant="danger" onClick={handleLogout}>
             <FontAwesomeIcon icon={faPowerOff} /> Logout
           </Button>
         </Nav>
@@ -73,19 +75,19 @@ const Header = (props) => {
   );
 
   const AdminNavbar = () => (
-    <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+    <Navbar
+      collapseOnSelect
+      expand="lg"
+      bg="dark"
+      variant="dark"
+      className="px-4"
+    >
       <Link to="/">
         <Navbar.Brand href="/">INTERNET BANKING</Navbar.Brand>
       </Link>
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />
       <Navbar.Collapse id="responsive-navbar-nav">
-        <Nav className="mr-auto">
-          <Navbar.Text className="text-light">
-            <Image src="./tic-tac-toe.png" className="avatar" roundedCircle />{" "}
-            <span className="text-light bold">{name}</span>
-          </Navbar.Text>
-        </Nav>
-        <Nav>
+        <Nav className="me-auto">
           <Nav.Link>
             <Link to="/edit" className="text-light mr-2">
               Edit profile
@@ -96,11 +98,13 @@ const Header = (props) => {
               Statistics
             </Link>
           </Nav.Link>
-          <Nav.Link>
+          {/* <Nav.Link>
             <Link to="/join" className="text-light mr-2">
               Join Chat
             </Link>
-          </Nav.Link>
+          </Nav.Link> */}
+        </Nav>
+        <Nav>
           <Button eventKey={2} variant="danger" onClick={handleLogout}>
             <FontAwesomeIcon icon={faPowerOff} /> Logout
           </Button>
@@ -110,35 +114,44 @@ const Header = (props) => {
   );
 
   const EmployeeNavbar = () => (
-    <Navbar collapseOnSelect expand="lg" bg="danger" variant="dark">
+    <Navbar
+      collapseOnSelect
+      expand="lg"
+      bg="danger"
+      variant="dark"
+      className="px-4 py-2"
+    >
       <Link to="/">
-        <Navbar.Brand href="/">INTERNET BANKING</Navbar.Brand>
+        <Navbar.Brand href="/" className="text-light">
+          INTERNET BANKING
+        </Navbar.Brand>
       </Link>
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-      <Navbar.Collapse id="responsive-navbar-nav">
-        <Nav className="mr-auto">
-          <Navbar.Text className="text-light">
-            <Image src="./tic-tac-toe.png" className="avatar" roundedCircle />{" "}
-            <span className="text-light bold">{name}</span>
-          </Navbar.Text>
+      <Navbar.Collapse
+        id="responsive-navbar-nav"
+        className="d-flex justify-content-between align-items-center"
+      >
+        <Nav className="d-flex align-items-center">
+          <Nav.Link as={Link} to="/new-customer" className="text-light ml-4">
+            Create
+          </Nav.Link>
+          <Nav.Link as={Link} to="/deposit" className="text-light ml-3">
+            Deposit
+          </Nav.Link>
+          <Nav.Link
+            as={Link}
+            to="/customer-transaction"
+            className="text-light ml-3"
+          >
+            Customer Transaction
+          </Nav.Link>
         </Nav>
-        <Nav>
-          <Nav.Link>
-            <Link to="/new-customer" className="text-light mr-2">
-              Create
-            </Link>
-          </Nav.Link>
-          <Nav.Link>
-            <Link to="/deposit" className="text-light mr-2">
-              Deposit
-            </Link>
-          </Nav.Link>
-          <Nav.Link>
-            <Link to="/customer-transaction" className="text-light mr-2">
-              Customer Transaction
-            </Link>
-          </Nav.Link>
-          <Button eventKey={2} variant="danger" onClick={handleLogout}>
+
+        <Nav className="d-flex align-items-center">
+          {/* <Navbar.Text className="text-light d-flex align-items-center">
+            <span className="text-light bold mr-3">User: {name}</span>
+          </Navbar.Text> */}
+          <Button variant="light" className="ml-3" onClick={handleLogout}>
             <FontAwesomeIcon icon={faPowerOff} /> Logout
           </Button>
         </Nav>
@@ -151,7 +164,7 @@ const Header = (props) => {
       case "admin": {
         return <AdminNavbar />;
       }
-      case "employee": {
+      case "Employee": {
         return <EmployeeNavbar />;
       }
       case "customer": {

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Badge, Alert, Button } from "react-bootstrap";
+import { Badge, Alert, Button, Col } from "react-bootstrap";
 
 import AlertBox from "../../../Others/AlertBox/AlertBox";
 import moneyFormatter from "../../../HelperFunctions/moneyFormatter";
@@ -22,7 +22,7 @@ const TransactionList = (props) => {
   const DetailTransaction = () => {
     return (
       <>
-        <Button
+        {/* <Button
           variant="light"
           size="sm"
           onClick={() => {
@@ -30,22 +30,23 @@ const TransactionList = (props) => {
           }}
         >
           <FontAwesomeIcon icon={faBackward} /> BACK
-        </Button>
+        </Button> */}
         <TransactionDetail transactionDetail={workingTransaction} />
       </>
     );
   };
 
   const TotalTransaction = () => {
+    console.log(transactionsData);
     if (transactionsData.length === 0) {
       return (
         <>
           <AlertBox
-            alertTypes="success"
-            alertHeading="Xin chào!"
-            alertMessage="Chưa có giao dịch nào trong thời gian này!"
+            alertTypes="info"
+            alertHeading="Info"
+            alertMessage="No recent transactions!"
           />
-          <Button
+          {/* <Button
             variant="light"
             size="sm"
             onClick={() => {
@@ -53,60 +54,55 @@ const TransactionList = (props) => {
             }}
           >
             <FontAwesomeIcon icon={faBackward} /> BACK
-          </Button>
+          </Button> */}
         </>
       );
     } else {
       return (
         <>
-          <Button variant="light" size="sm" onClick={() => setLittleStep(0)}>
+          {/* <Button variant="light" size="sm" onClick={() => setLittleStep(0)}>
             <FontAwesomeIcon icon={faBackward} /> Back to transaction list
-          </Button>
-          <h5>Khách hàng: {currentUser.name.toUpperCase()}</h5>
+          </Button> */}
+          <h5>Customer name: {currentUser.name.toUpperCase()}</h5>
           {transactionsData.map((item, index) => {
             let nameToShow = "";
-            let moneyType, moneyDetail, transactionType, badgeName;
-            if (item.receivedUserId === currentUser.accountNumber) {
-              nameToShow = item.sentUserName;
+            let moneyType, moneyDetail, transactionType;
+
+            if (item.receiverAccountNumber === currentUser.accountNumber) {
+              nameToShow = item.senderAccountName;
               moneyType = "success";
               moneyDetail = `+ ${moneyFormatter.format(item.amount)}`;
               transactionType = "success";
-              badgeName = item.isDebt ? "Thanh toán nợ" : "Nhận từ";
             } else {
-              nameToShow = item.receivedUserName;
+              nameToShow = item.receiverAccountName;
               moneyType = "danger";
               moneyDetail = `- ${moneyFormatter.format(item.amount)}`;
               transactionType = item.isDebt ? "secondary" : "danger";
-              badgeName = item.isDebt ? "Thanh toán nợ" : "Chuyển cho";
             }
-            const badgeType = item.isDebt ? "secondary" : "primary";
+
             const dateToShow = new Date(item.createdAt).toUTCString();
             return (
               <Alert variant={transactionType} key={index}>
-                <Badge variant={badgeType}>{badgeName}</Badge>{" "}
-                <span>
+                <Badge className="text-md text-black">
+                  {item.type === "dept" ? "DEBT" : item.type.toUpperCase()}{" "}
+                  TRANSACTION
+                </Badge>{" "}
+                <Col className="d-flex align-items-center justify-content-between">
                   <span>
                     <b>{nameToShow.toUpperCase()}</b>
                   </span>
-                  <Badge variant={moneyType} className="float-right money">
+                  <Badge
+                    variant={moneyType}
+                    className="text-black float-right money"
+                  >
                     {moneyDetail}
                   </Badge>
-                </span>
+                </Col>
                 <p>{item.content}</p>
                 <hr />
-                <span>{dateToShow}</span>
-                <Button
-                  variant="success"
-                  size="sm float-right"
-                  onClick={() => {
-                    setWorkingTransaction(
-                      Object.assign(workingTransaction, item)
-                    );
-                    setLittleStep("detail");
-                  }}
-                >
-                  <FontAwesomeIcon icon={faEye} />
-                </Button>
+                <Col className="d-flex justify-content-between">
+                  <span>{dateToShow}</span>
+                </Col>
               </Alert>
             );
           })}

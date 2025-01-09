@@ -134,6 +134,12 @@ export const admin_routes = [
     layout: DefaultLayout,
   },
   {
+    path: "/deposit",
+    routetype: PrivateRoute,
+    component: DepositFormConnect,
+    layout: DefaultLayout,
+  },
+  {
     path: "/employees",
     routetype: PrivateRoute,
     component: EmployeeManagementConnect,
@@ -149,6 +155,18 @@ export const admin_routes = [
     path: "/statistics",
     routetype: PrivateRoute,
     component: TransactionStatisticsConnect,
+    layout: DefaultLayout,
+  },
+  {
+    path: "/customer-transaction",
+    routetype: PrivateRoute,
+    component: CustomerTransactionConnect,
+    layout: DefaultLayout,
+  },
+  {
+    path: "/new-customer",
+    routetype: PrivateRoute,
+    component: NewCustomerFormConnect,
     layout: DefaultLayout,
   },
   {

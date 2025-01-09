@@ -10,8 +10,9 @@ const OtpForm = (props) => {
     setFormVariables,
     accessToken,
     setStep,
-    balance,
     setFormError,
+    email,
+    accountNumber,
   } = props;
   const [validated, setValidated] = useState(false);
 
@@ -26,27 +27,28 @@ const OtpForm = (props) => {
     event.preventDefault();
     if (
       form.checkValidity() === false ||
-      formVariables.name == "" ||
-      formVariables.name == "KHONG TIM THAY"
+      formVariables.name === "" ||
+      formVariables.name === "KHONG TIM THAY"
     ) {
       event.stopPropagation();
     } else {
       await axios
-        .post(
-          "/api/transaction/verify-code",
-          {
-            code: formVariables.otp,
-          },
-          {
-            headers: {
-              transactionId: formVariables.transactionId,
-            },
-          }
-        )
-        .then((result) => {
+        .post("/otp/verify", {
+          otp: formVariables.otp,
+          email,
+        })
+        .then(async (result) => {
           console.log(result);
           setFormVariables({ ...formVariables, isLoading: false });
           if (result.status === 200) {
+            await axios.post(`/api/protected/transactions`, {
+              senderAccountNumber: accountNumber,
+              receiverAccountNumber: formVariables.accountNumber,
+              // receivedBankId: formVariables.bankId,
+              amount: formVariables.amount,
+              description: formVariables.content,
+              type: formVariables.bankId === 0 ? "internal" : "external",
+            });
             setStep(4);
             setFormError(null, "");
           }
@@ -68,7 +70,7 @@ const OtpForm = (props) => {
       <Form noValidate validated={validated} onSubmit={handleSubmit}>
         <Form.Group>
           <p>
-            You're about to send {formVariables.amount} to user{" "}
+            You're about to send {formVariables.amount} VND to user{" "}
             <span>{formVariables.name}</span>
           </p>
           <Form.Text className="text-muted font-weight-bold">
@@ -83,19 +85,21 @@ const OtpForm = (props) => {
             isInvalid={formVariables.otp === ""}
           />
           <Form.Control.Feedback type="invalid">
-            Give your receiver a message to know
+            Enter OTP code sent to your email
           </Form.Control.Feedback>
         </Form.Group>
-        <Button variant="primary" type="submit">
-          Next
-        </Button>
-        <Button
-          variant="primary-outline"
-          type="button"
-          onClick={() => setStep(2)}
-        >
-          <FontAwesomeIcon icon={faBackward} /> Back
-        </Button>
+        <Col className="d-flex justify-content-center mt-3">
+          <Button
+            variant="primary-outline"
+            type="button"
+            onClick={() => setStep(2)}
+          >
+            <FontAwesomeIcon icon={faBackward} /> Back
+          </Button>
+          <Button variant="primary" type="submit">
+            Next
+          </Button>
+        </Col>
       </Form>
     </>
   );

@@ -4,27 +4,18 @@ import {
   Col,
   Card,
   Row,
-  DropdownButton,
-  Dropdown,
-  ButtonGroup,
+  // DropdownButton,
+  // Dropdown,
+  // ButtonGroup,
 } from "react-bootstrap";
 import axios from "axios";
 
-import AlertBox from "../../Others/AlertBox/AlertBox";
 import "./TransactionManagement.css";
 import TransactionList from "./TransactionList/TransactionList";
 
-import moneyFormatter from "../../HelperFunctions/moneyFormatter";
-
 const TransactionManagement = (props) => {
-  const {
-    reducerAuthorization,
-    reducerUserInformation,
-    reducerUserTransactions,
-  } = props;
+  const { reducerUserInformation } = props;
   const currentUser = reducerUserInformation.data;
-  // const transactionsData = reducerUserTransactions.data;
-  // const transactionsData = [];
   const [transactionsData, setTransactionsData] = useState([]);
   const mountedRef = useRef(true);
 
@@ -38,11 +29,14 @@ const TransactionManagement = (props) => {
       mountedRef.current = false;
       isGettingAList = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getList = async (isGettingAList) => {
     await axios
-      .get(`/api/transaction/history`)
+      .get(
+        `http://localhost:8080/api/protected/transactions/transaction/account/${currentUser.accountId}`
+      )
       .then((result) => result.data.data)
       .then((result) => {
         if (isGettingAList) {
@@ -63,7 +57,7 @@ const TransactionManagement = (props) => {
         <Col md={{ span: 5, offset: 3 }} lg={6}>
           <Card className="mt-3">
             <Card.Header className="toolBar">
-              QUẢN LÝ GIAO DỊCH TÀI KHOẢN
+              ACCOUNT TRANSACTION MANAGEMENT
             </Card.Header>
             <Card.Body>
               {/* <div className="form-group row">
@@ -79,8 +73,8 @@ const TransactionManagement = (props) => {
 									variant="light"
 									title="Date"
 								>
-									<Dropdown.Item eventKey="1">Action</Dropdown.Item>
-									<Dropdown.Item eventKey="2">Another action</Dropdown.Item>
+									<Dropdown.Item eventkey="1">Action</Dropdown.Item>
+									<Dropdown.Item eventkey="2">Another action</Dropdown.Item>
 								</DropdownButton>
 							</div> */}
               <TransactionList

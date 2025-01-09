@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Col, Row, Card, Container, Form } from "react-bootstrap";
+import { Col, Row, Card, Container } from "react-bootstrap";
 import { Table, Badge, Button, Space, DatePicker } from "antd";
 import axios from "axios";
 import getBankName from "../../HelperFunctions/getBankName";
 import formatter from "../../HelperFunctions/moneyFormatter";
 import TransactionDetail from "../../Customer/TransactionManagement/TransactionDetail/TransactionDetail";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faBackward } from "@fortawesome/free-solid-svg-icons";
+import { faBackward } from "@fortawesome/free-solid-svg-icons";
 
-const { Column, ColumnGroup } = Table;
+const { Column } = Table;
 const { RangePicker } = DatePicker;
 
 const TransactionStatistics = (props) => {
@@ -18,7 +18,6 @@ const TransactionStatistics = (props) => {
   const [workingTransaction, setWorkingTransaction] = useState({
     sentUserId: "",
   });
-  // const [fromDate, setFromDate] = useState(null);
   let range = null;
   const mountedRef = useRef(true);
 
@@ -47,7 +46,7 @@ const TransactionStatistics = (props) => {
   };
 
   const onFilter = (range) => {
-    if (range === null) return alert("Sai");
+    if (range === null) return alert("Wrong information");
     const fromDateUTC = new Date(range.fromDate);
     const toDateUTC = new Date(range.toDate);
     const newTransactionData = transactionsData.filter((item) => {
@@ -63,7 +62,7 @@ const TransactionStatistics = (props) => {
   const StatisticTable = () => {
     return (
       <>
-        <Space>
+        <Space className="mb-3">
           <RangePicker
             onChange={(dates, dateStrings) => {
               console.log("hello: ", dates, dateStrings);
@@ -81,7 +80,7 @@ const TransactionStatistics = (props) => {
             key="sentBankId"
             render={(sentBankId) => <>{getBankName(sentBankId)}</>}
             filters={[
-              { text: "SAPHASANBank", value: 0 },
+              { text: "DOMLand Bank", value: 0 },
               { text: "3TBank", value: 1 },
               { text: "BAOSON Bank", value: 2 },
             ]}
@@ -93,7 +92,7 @@ const TransactionStatistics = (props) => {
             key="receivedBankId"
             render={(receivedBankId) => <>{getBankName(receivedBankId)}</>}
             filters={[
-              { text: "SAPHASANBank", value: 0 },
+              { text: "DOMLand Bank", value: 0 },
               { text: "3TBank", value: 1 },
               { text: "BAOSON Bank", value: 2 },
             ]}
@@ -155,7 +154,7 @@ const TransactionStatistics = (props) => {
       <Row>
         <Col md={{ span: 5, offset: 3 }} lg={6}>
           <Card className="mt-3">
-            <Card.Header className="toolBar">TRA SOÁT GIAO DỊCH</Card.Header>
+            <Card.Header className="toolBar">CUSTOMER TRANSACTION</Card.Header>
             <Card.Body>
               {step === "table" && <StatisticTable />}
               {step === "transaction-detail" && (

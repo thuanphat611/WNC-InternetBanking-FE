@@ -1,17 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { Button } from "react-bootstrap";
+import React from "react";
+import { Button, Col } from "react-bootstrap";
 import "./SuccessInformation.css";
 
 import getBankName from "../../../HelperFunctions/getBankName";
 
 const SuccessInformation = (props) => {
-  const {
-    formVariables,
-    reducerUserInformation,
-    balance,
-    setStep,
-    setFormError,
-  } = props;
+  const { formVariables, reducerUserInformation, setFormVariables, setStep } =
+    props;
   const { data, receivers } = reducerUserInformation;
 
   const formatter = new Intl.NumberFormat("en-US", {
@@ -20,72 +15,90 @@ const SuccessInformation = (props) => {
     minimumFractionDigits: 0,
   });
 
-  const thisCustomerIsInReceiverList = (customer) => {
-    if (
-      customer.accountNumber === formVariables.accountNumber &&
-      customer.bankId === formVariables.bankId
-    ) {
-      return true;
-    }
-    return false;
+  const thisCustomerIsInReceiverList = () => {
+    const exist = receivers.filter(
+      (item) =>
+        item.receiverAccountId === formVariables.accountNumber &&
+        item.bankId === formVariables.bankId
+    );
+
+    return exist.length !== 0;
   };
+  console.log(thisCustomerIsInReceiverList());
 
   return (
     <>
       <h5 className="text-center">
-        ĐÃ CHUYỂN {formatter.format(formVariables.amount)}
+        TRANSFERED {formatter.format(formVariables.amount)}
       </h5>
       <p className="information">
         <dl className="row">
           {/* <dt className="col-sm-3">Thời gian chuyển:</dt>
 					<dd className="col-sm-9">{data.name.toUpperCase()}</dd> */}
 
-          <dt className="col-sm-4">Ngày chuyển:</dt>
+          <dt className="col-sm-4">Transer date:</dt>
           <dd className="col-sm-7">{Date(formVariables.createdAt)}</dd>
           {formVariables.isReceiverPaid ? (
             <>
-              <dt className="col-sm-4">Người nhận chịu phí:</dt>
-              <dd className="col-sm-7">10,000đ</dd>
+              <dt className="col-sm-4">The recipient bears the fee:</dt>
+              <dd className="col-sm-7">1,000đ</dd>
             </>
           ) : (
             <>
-              <dt className="col-sm-4">Người chuyển chịu phí:</dt>
+              <dt className="col-sm-4">The sender bears the fee:</dt>
               <dd className="col-sm-7">1,000đ</dd>
             </>
           )}
         </dl>
       </p>
-      <h5 className="text-center">BÊN CHUYỂN</h5>
+      <h5 className="text-center">SENDER</h5>
       <p className="information">
         <dl className="row">
-          <dt className="col-sm-4">Tên người chuyển:</dt>
+          <dt className="col-sm-4">Sender's name:</dt>
           <dd className="col-sm-7">{data.name.toUpperCase()}</dd>
 
-          <dt className="col-sm-4">Ngân hàng:</dt>
-          <dd className="col-sm-7">SAPHASAN Bank</dd>
+          <dt className="col-sm-4">Bank:</dt>
+          <dd className="col-sm-7">DOMLand Bank</dd>
 
-          <dt className="col-sm-4">Tài khoản chuyển:</dt>
+          <dt className="col-sm-4">Account number:</dt>
           <dd className="col-sm-7">{data.accountNumber}</dd>
         </dl>
       </p>
-      <h5 className="text-center">BÊN NHẬN</h5>
-      <p className="information">
+      <h5 className="text-center">RECIPIENT</h5>
+      <div className="information">
         <dl className="row">
-          <dt className="col-sm-4">Tên người nhận:</dt>
+          <dt className="col-sm-4">Recipient's name:</dt>
           <dd className="col-sm-7">{formVariables.name.toUpperCase()}</dd>
 
-          <dt className="col-sm-4">Ngân hàng:</dt>
+          <dt className="col-sm-4">Bank:</dt>
           <dd className="col-sm-7">{getBankName(formVariables.bankId)}</dd>
 
-          <dt className="col-sm-4">Tài khoản nhận:</dt>
+          <dt className="col-sm-4">Account number:</dt>
           <dd className="col-sm-7">{formVariables.accountNumber}</dd>
         </dl>
-      </p>
-      {receivers.findIndex(thisCustomerIsInReceiverList) === -1 && (
-        <Button variant="success" type="submit" onClick={() => setStep(5)}>
-          Đưa người này vào danh sách người nhận
+      </div>
+      <Col className="d-flex justify-content-center gap-3">
+        <Button
+          className="mt-3"
+          variant="primary"
+          type="submit"
+          onClick={() => {
+            window.location.reload();
+          }}
+        >
+          Close
         </Button>
-      )}
+        {!thisCustomerIsInReceiverList() && (
+          <Button
+            className="mt-3"
+            variant="success"
+            type="submit"
+            onClick={() => setStep(5)}
+          >
+            Add this person to the recipient list
+          </Button>
+        )}
+      </Col>
     </>
   );
 };

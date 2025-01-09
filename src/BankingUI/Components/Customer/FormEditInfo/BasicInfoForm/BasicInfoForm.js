@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 
-import { Col, Row, Button, Card, Container, Form } from "react-bootstrap";
-import { Link } from "react-router-dom";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBackward } from "@fortawesome/free-solid-svg-icons";
+import { Col, Row, Button, Form } from "react-bootstrap";
 
 const BasicInfoForm = ({
   basicInfoForm,
@@ -41,7 +37,6 @@ const BasicInfoForm = ({
   return (
     <Form noValidate validated={validated} onSubmit={handleSubmit}>
       <Form.Group>
-        {/* <Form.Label className="font-weight-bold">ID and UserName</Form.Label> */}
         <Row>
           <Col>
             <Form.Text className="text-muted font-weight-bold">
@@ -54,24 +49,13 @@ const BasicInfoForm = ({
               disabled
             />
           </Col>
-          <Col>
-            <Form.Text className="text-muted font-weight-bold">
-              Username
-            </Form.Text>
-            <Form.Control
-              required
-              type="text"
-              value={basicInfoForm.username}
-              disabled
-            />
-          </Col>
         </Row>
         <Form.Text className="text-muted">
           You cannot change this value. You will use this username to login.
         </Form.Text>
       </Form.Group>
       <Form.Group>
-        <Form.Label className="font-weight-bold">Basic information</Form.Label>
+        {/* <Form.Label className="font-weight-bold">Basic information</Form.Label> */}
         <Form.Text className="text-muted font-weight-bold">Name</Form.Text>
         <Form.Control
           required
@@ -109,7 +93,7 @@ const BasicInfoForm = ({
           Please fill the field.
         </Form.Control.Feedback>
       </Form.Group>
-      <Button variant="primary" type="submit">
+      <Button variant="primary" type="submit" className="mt-3">
         Edit
         {/* {isLoading ? <Spinner animation="border" size="sm" /> : null} */}
       </Button>

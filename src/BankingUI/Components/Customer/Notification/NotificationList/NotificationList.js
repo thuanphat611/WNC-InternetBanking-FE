@@ -16,7 +16,7 @@ const NotificationList = (props) => {
       return (
         <AlertBox
           alertTypes="success"
-          alertHeading="Xin chào!"
+          alertHeading="Info"
           alertMessage="Chưa có thông báo nào trong thời gian này!"
         />
       );

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Modal, Button, Form, Col, Row } from "react-bootstrap";
+import React, { useState } from "react";
+import { Button, Form, Col, Row } from "react-bootstrap";
 import axios from "axios";
 
 const RecommendAddReceiver = ({
@@ -7,6 +7,8 @@ const RecommendAddReceiver = ({
   accessToken,
   setFormVariables,
   setStep,
+  accountNumber,
+  setFormError,
 }) => {
   const [validated, setValidated] = useState(false);
 
@@ -19,15 +21,20 @@ const RecommendAddReceiver = ({
   // Submit
   const handleSubmit = async (event) => {
     const form = event.currentTarget;
+    event.preventDefault();
     if (form.checkValidity() === false) {
       event.preventDefault();
       event.stopPropagation();
     } else {
-      await axios.patch(`/api/users/receiver-list`, {
-        savedName: formVariables.savedName,
+      await axios.post(`/api/protected/receiver`, {
+        senderAccountNumber: accountNumber,
+        receiverAccountNumber: formVariables.accountNumber,
+        nickName: formVariables.savedName,
         bankId: +formVariables.bankId,
-        accountNumber: formVariables.accountNumber,
+        type: formVariables.bankId === 0 ? "internal" : "external",
       });
+      setFormError(null, "Added this account to receiver list");
+      setTimeout(() => (window.location = "/"), 1000);
     }
     setValidated(true);
   };
@@ -53,7 +60,6 @@ const RecommendAddReceiver = ({
           <Col>
             <Form.Text className="text-muted font-weight-bold">Bank</Form.Text>
             <Form.Control
-              size="sm"
               as="select"
               name="bankId"
               value={formVariables.bankId}
@@ -61,15 +67,12 @@ const RecommendAddReceiver = ({
               disabled
             >
               <option value={-1}></option>
-              <option value={0}>SAPHASAN Bank</option>
+              <option value={0}>DOMLand Bank</option>
               <option value={1}>Ngân hàng Ba Tê</option>
               <option value={2}>BAOSON Bank</option>
             </Form.Control>
           </Col>
         </Row>
-        <Form.Text className="text-muted">
-          You cannot change this value. You will use this username to login.
-        </Form.Text>
         <Form.Text className="text-muted font-weight-bold">Full name</Form.Text>
         <Form.Control
           required
@@ -97,12 +100,14 @@ const RecommendAddReceiver = ({
           Please fill the field.
         </Form.Control.Feedback>
       </Form.Group>
-      <Button variant="primary" type="submit">
-        Add
-      </Button>
-      <Button variant="secondary" onClick={() => setStep(4)}>
-        Close
-      </Button>
+      <Col className="d-flex justify-content-center mt-3 gap-2">
+        <Button variant="primary" type="submit">
+          Add
+        </Button>
+        <Button variant="secondary" onClick={() => setStep(4)}>
+          Close
+        </Button>
+      </Col>
     </Form>
   );
 };

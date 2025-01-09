@@ -14,12 +14,13 @@ const CustomersList = (props) => {
     getUserTransaction,
   } = props;
   const handleClick = (item) => {
+    currentUser["id"] = item.accounntId;
     currentUser["name"] = item.name;
     currentUser["accountNumber"] = item.accountNumber;
     currentUser["balance"] = item.balance;
     setCurrentUser({ ...currentUser });
     setStep(1);
-    // getUserTransaction();
+    getUserTransaction();
   };
 
   usersData.sort((firstCustomer, secondCustomer) => {
@@ -34,18 +35,12 @@ const CustomersList = (props) => {
         key="accountNumber"
         sorter={(a, b) => a.accountNumber - b.accountNumber}
       />
-      <Column title="Username" dataIndex="username" key="username" />
       <Column title="Name" dataIndex="name" key="name" />
+      <Column title="Email" dataIndex="email" key="email" />
+      <Column title="Balance(VND)" dataIndex="balance" key="balance" className="text-center"/>
       <Column
-        title="Balance"
-        dataIndex="balance"
-        key="balance"
-        sorter={(a, b) => a.balance - b.balance}
-        render={(balance) => <p>{formatter.format(balance)}</p>}
-      />
-      <Column
-        title="Action"
-        key="action"
+        title="transactionHistory"
+        key="transactionHistory"
         render={(item) => (
           <Button
             type="primary"
@@ -54,7 +49,7 @@ const CustomersList = (props) => {
               console.log(item);
             }}
           >
-            Go
+            View
           </Button>
         )}
       />

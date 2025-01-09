@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Spinner, Button, Form, Col, Row } from "react-bootstrap";
+import { Table, Button, Form, Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBackward } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
@@ -10,8 +10,8 @@ const AddAmountForm = (props) => {
     setFormVariables,
     accessToken,
     setStep,
-    balance,
     setFormError,
+    accountNumber,
   } = props;
   const [validated, setValidated] = useState(false);
 
@@ -26,51 +26,39 @@ const AddAmountForm = (props) => {
     event.preventDefault();
     if (
       form.checkValidity() === false ||
-      formVariables.name == "" ||
-      formVariables.name == "KHONG TIM THAY"
+      formVariables.name === "" ||
+      formVariables.name === "KHONG TIM THAY"
     ) {
       event.stopPropagation();
     } else {
-      const payFee = formVariables.isReceiverPaid ? 0 : 10000;
-      if (balance - 50000 - formVariables.amount - payFee >= 0) {
-        setFormVariables({ ...formVariables, isLoading: true });
-        await axios
-          .post("/api/transaction", {
-            receivedUserId: formVariables.accountNumber,
-            receivedUserName: formVariables.name,
-            receivedBankId: formVariables.bankId,
-            isDebt: false,
-            isReceiverPaid: formVariables.isReceiverPaid,
-            amount: formVariables.amount,
-            content: formVariables.content,
-          })
-          .then((result) => {
-            console.log(result);
-            setFormVariables({ ...formVariables, isLoading: false });
-
-            formVariables["createdAt"] = result.data.data.createdAt;
-            formVariables["transactionId"] = result.data.data.transactionId;
-            setFormVariables({ ...formVariables });
-            setStep(3);
-            setFormError(null, "");
-          })
-          .catch((err) => console.log(err.response));
-        setFormVariables({ ...formVariables, isLoading: false });
-
-        console.log(formVariables);
-        // setStep(3);
-        // setFormError(null, "");
-      } else
-        return setFormError(
-          true,
-          "Tiền không đủ, chuyển cái gì mà chuyển hả trời!"
-        );
-      setStep(3);
+      console.log({
+        senderAccountNumber: accountNumber,
+        receiverAccountNumber: formVariables.accountNumber,
+        amount: formVariables.amount,
+        description: formVariables.content,
+      });
+      axios
+        .post("/api/protected/dept-reminder/create", {
+          senderAccountNumber: accountNumber,
+          receiverAccountNumber: formVariables.accountNumber,
+          amount: formVariables.amount,
+          description: formVariables.content,
+        })
+        .then((result) => {
+          setFormError(null, "Debt reminder created");
+          console.log(result.message);
+        })
+        .catch((err) => {
+          setFormError(true, "Something's wrong, please try again.");
+          console.log(err.response);
+        });
+      // setStep(3);
+      // setFormError(null, "");
+      // } else
+      // 	setFormError(true, "Tiền không đủ, chuyển cái gì mà chuyển hả trời!");
     }
     setValidated(true);
   };
-
-  console.log(formVariables);
 
   return (
     <>
@@ -106,7 +94,7 @@ const AddAmountForm = (props) => {
                 disabled
               >
                 <option value={-1}></option>
-                <option value={0}>SAPHASAN Bank</option>
+                <option value={0}>DOMLand Bank</option>
                 <option value={1}>Ngân hàng Ba Tê</option>
                 <option value={2}>BAOSON Bank</option>
               </Form.Control>
@@ -129,17 +117,6 @@ const AddAmountForm = (props) => {
           />
         </Form.Group>
         <Form.Group>
-          <Form.Group controlId="formBasicCheckbox">
-            <Form.Check
-              type="checkbox"
-              name="isReceiverPaid"
-              onChange={(e) => {
-                formVariables.isReceiverPaid = e.target.checked;
-                setFormVariables({ ...formVariables });
-              }}
-              label="Người nhận chịu phí (1.000đ)"
-            />
-          </Form.Group>
           <Form.Text className="text-muted font-weight-bold">Amount</Form.Text>
           <Form.Control
             required
@@ -149,42 +126,39 @@ const AddAmountForm = (props) => {
             name="amount"
             value={formVariables.amount}
             onChange={(e) => handleChange(e)}
-            isInvalid={formVariables.amount % 1000 !== 0}
+            isInvalid={
+              formVariables.amount % 1000 !== 0 && formVariables.amount === 0
+            }
           />
           <Form.Control.Feedback type="invalid">
-            Số tiền phải chia hết cho 1000
+            The amount must be divisible by 1,000đ and cannot be zero
           </Form.Control.Feedback>
           <Form.Text className="text-muted font-weight-bold">Message</Form.Text>
           <Form.Control
             required
             as="textarea"
             rows="3"
-            type="text"
             name="content"
             value={formVariables.content}
             onChange={(e) => handleChange(e)}
-            isInvalid={formVariables.content === ""}
+            isInvalid={formVariables.debtContent.length === 0}
           />
           <Form.Control.Feedback type="invalid">
             Give your receiver a message to know
           </Form.Control.Feedback>
         </Form.Group>
-        <Button
-          variant="primary-outline"
-          type="button"
-          onClick={() => setStep(1)}
-        >
-          <FontAwesomeIcon icon={faBackward} /> Back
-        </Button>
-        <Button variant="primary" type="submit" className="float-right">
-          {formVariables.isLoading ? (
-            <>
-              <Spinner animation="border" size="sm" /> Waiting...
-            </>
-          ) : (
-            <>Next</>
-          )}
-        </Button>
+        <Col className="d-flex justify-content-center gap-3 mt-3">
+          <Button
+            variant="primary-outline"
+            type="button"
+            onClick={() => setStep(1)}
+          >
+            <FontAwesomeIcon icon={faBackward} /> Back
+          </Button>
+          <Button variant="primary" type="submit">
+            Next
+          </Button>
+        </Col>
       </Form>
     </>
   );

@@ -14,13 +14,13 @@ const JumbotronComponent = (props) => {
 
 	const renderJumbotron = () => {
 		return (
-			<Jumbotron fluid className="jumbotronComponent">
-				<Container className="text-center">
-					<h1 className="userName">{name.toUpperCase()}</h1>
-					<p>Account Number: {accountNumber} - SAPHASAN Bank - 2020</p>
-				</Container>
-			</Jumbotron>
-		);
+      <Jumbotron fluid className="jumbotronComponent">
+        <Container className="text-center">
+          <h1 className="userName">{name.toUpperCase()}</h1>
+          <p>Account Number: {accountNumber} - DOMLand Bank </p>
+        </Container>
+      </Jumbotron>
+    );
 	};
 
 	return <>{authentication.role === "customer" && renderJumbotron()}</>;

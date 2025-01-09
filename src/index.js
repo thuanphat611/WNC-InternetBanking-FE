@@ -8,7 +8,7 @@ import { Provider } from "react-redux";
 import store from "./redux/store";
 import { BrowserRouter } from "react-router-dom";
 import * as serviceWorker from "./serviceWorker";
-require("dotenv").config();
+// require("dotenv").config();
 
 ReactDOM.render(
 	<Provider store={store}>
