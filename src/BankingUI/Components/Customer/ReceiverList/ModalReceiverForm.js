@@ -131,7 +131,7 @@ const ModalForm = ({
                 >
                   <option value={-1}></option>
                   <option value={0}>DOMLand Bank</option>
-                  <option value={1}>Ngân hàng Ba Tê</option>
+                  <option value={1}>Team3 Bank</option>
                   <option value={2}>Hoa Bank</option>
                 </Form.Control>
               </Col>
@@ -204,7 +204,7 @@ const ModalForm = ({
                 >
                   <option value={-1}></option>
                   <option value={0}>DOMLand Bank</option>
-                  <option value={1}>Ngân hàng Ba Tê</option>
+                  <option value={1}>Team3 Bank</option>
                   <option value={2}>Hoa Bank</option>
                 </Form.Control>
               </Col>

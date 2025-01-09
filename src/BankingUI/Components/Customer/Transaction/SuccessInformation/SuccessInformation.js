@@ -17,11 +17,15 @@ const SuccessInformation = (props) => {
 
   const thisCustomerIsInReceiverList = () => {
     const exist = receivers.filter(
-      (item) =>
-        item.receiverAccountId === formVariables.accountNumber &&
+      (item) =>{
+        console.log(item)
+        return item.receiverAccountId === formVariables.accountNumber &&
         item.bankId === formVariables.bankId
+      }
+        
+        
     );
-
+    
     return exist.length !== 0;
   };
   console.log(thisCustomerIsInReceiverList());
@@ -71,7 +75,7 @@ const SuccessInformation = (props) => {
           <dd className="col-sm-7">{formVariables.name.toUpperCase()}</dd>
 
           <dt className="col-sm-4">Bank:</dt>
-          <dd className="col-sm-7">{getBankName(formVariables.bankId)}</dd>
+          <dd className="col-sm-7">{getBankName(+formVariables.bankId)}</dd>
 
           <dt className="col-sm-4">Account number:</dt>
           <dd className="col-sm-7">{formVariables.accountNumber}</dd>
