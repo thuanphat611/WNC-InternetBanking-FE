@@ -1,13 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import {
-  Container,
-  Col,
-  Card,
-  Row,
-  // DropdownButton,
-  // Dropdown,
-  // ButtonGroup,
-} from "react-bootstrap";
+import { Container, Col, Card, Row } from "react-bootstrap";
 import axios from "axios";
 
 import "./TransactionManagement.css";
@@ -35,7 +27,7 @@ const TransactionManagement = (props) => {
   const getList = async (isGettingAList) => {
     await axios
       .get(
-        `http://localhost:8080/api/protected/transactions/transaction/account/${currentUser.accountId}`
+        `/api/protected/transactions/transaction/account/${currentUser.accountId}`
       )
       .then((result) => result.data.data)
       .then((result) => {
@@ -60,23 +52,6 @@ const TransactionManagement = (props) => {
               ACCOUNT TRANSACTION MANAGEMENT
             </Card.Header>
             <Card.Body>
-              {/* <div className="form-group row">
-								<label
-									for="example-date-input"
-									className="col-4 col-form-label"
-								>
-									Sort
-								</label>
-								<DropdownButton
-									as={ButtonGroup}
-									id="dropdown-variants-light"
-									variant="light"
-									title="Date"
-								>
-									<Dropdown.Item eventkey="1">Action</Dropdown.Item>
-									<Dropdown.Item eventkey="2">Another action</Dropdown.Item>
-								</DropdownButton>
-							</div> */}
               <TransactionList
                 transactionsData={transactionsData}
                 currentUser={currentUser}

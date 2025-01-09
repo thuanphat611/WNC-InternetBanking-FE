@@ -1,16 +1,17 @@
 import React, { useState } from "react";
-import { Badge, Alert, Button, Col } from "react-bootstrap";
+import { Badge, Alert, Col } from "react-bootstrap";
 
 import AlertBox from "../../../Others/AlertBox/AlertBox";
 import moneyFormatter from "../../../HelperFunctions/moneyFormatter";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faBackward } from "@fortawesome/free-solid-svg-icons";
 
 import TransactionDetail from "../TransactionDetail/TransactionDetail";
 
 const TransactionList = (props) => {
+  // eslint-disable-next-line no-unused-vars
   const { currentUser, setStep } = props;
+  // eslint-disable-next-line no-unused-vars
   const [step, setLittleStep] = useState("total");
+  // eslint-disable-next-line no-unused-vars
   const [workingTransaction, setWorkingTransaction] = useState({
     sentUserId: "",
   });
@@ -78,6 +79,9 @@ const TransactionList = (props) => {
               moneyType = "danger";
               moneyDetail = `- ${moneyFormatter.format(item.amount)}`;
               transactionType = item.isDebt ? "secondary" : "danger";
+            }
+            if (item.type === "external") {
+              transactionType = "info";
             }
 
             const dateToShow = new Date(item.createdAt).toUTCString();

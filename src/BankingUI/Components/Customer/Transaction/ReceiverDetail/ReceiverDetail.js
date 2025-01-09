@@ -25,6 +25,26 @@ const ReceiverDetail = (props) => {
 
     setFormVariables({ ...formVariables, name: "WAITING..." });
     if (bankId !== -1 && accountNumber !== "") {
+      if (bankId == 1) {
+        const name = await axios
+          .post(`/api/external/customer/query`, {
+            srcBankCode: "BANK1",
+            desAccountNumber: accountNumber,
+          })
+          .then((result) => {
+            console.log(result)
+            if (result.data.data.desAccountName) return result.data.data.desAccountName;
+            return "NOT FOUND";
+          })
+          .catch((err) => "NOT FOUND");
+      
+        await setFormVariables({
+          ...formVariables,
+          accountNumber: accountNumber,
+          bankId: bankId,
+          name: name,
+        });
+      } else {
       const name = await axios
         .get(`/api/protected/customer/bank/${bankId}/users/${accountNumber}`)
         .then((result) => {
@@ -40,6 +60,7 @@ const ReceiverDetail = (props) => {
         name: name,
       });
     }
+  }
   };
 
   // Update giá trị điền vào Form
@@ -115,7 +136,7 @@ const ReceiverDetail = (props) => {
                 >
                   <option value={-1}></option>
                   <option value={0}>DOMLand Bank</option>
-                  <option value={1}>Ngân hàng Ba Tê</option>
+                  <option value={1}>Team3 Bank</option>
                   <option value={2}>Hoa Bank</option>
                 </Form.Control>
                 <Form.Text className="text-muted font-weight-bold">
@@ -163,7 +184,7 @@ const ReceiverDetail = (props) => {
                         {receiver.bankId === 0
                           ? "DOMLand Bank"
                           : receiver.bankId === 1
-                          ? "Ngân hàng Ba Tê"
+                          ? "Team3 Bank"
                           : "Hoa Bank"}
                       </td>
                       <td className="action">
@@ -241,7 +262,7 @@ const ReceiverDetail = (props) => {
                   >
                     <option value={-1}></option>
                     <option value={0}>DOMLand Bank</option>
-                    <option value={1}>Ngân hàng Ba Tê</option>
+                    <option value={1}>Team3 Bank</option>
                     <option value={2}>Hoa Bank</option>
                   </Form.Control>
                 </Col>

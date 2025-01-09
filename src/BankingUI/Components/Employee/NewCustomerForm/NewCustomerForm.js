@@ -5,8 +5,6 @@ import axios from "axios";
 import AlertBox from "../../Others/AlertBox/AlertBox";
 
 const NewCustomerForm = (props) => {
-  const { reducerAuthorization } = props;
-  const { accessToken } = reducerAuthorization.authentication;
   const [validated, setValidated] = useState(false);
 
   const [formVariables, setFormVariables] = useState({

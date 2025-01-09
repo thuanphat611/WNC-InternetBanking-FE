@@ -1,23 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Col, Row, Button, Card, Container, Form } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Col, Row, Card, Container } from "react-bootstrap";
 import axios from "axios";
 
-import AlertBox from "../../Others/AlertBox/AlertBox";
 import CustomersList from "./CustomersList/CustomersList";
 import TransactionList from "../../Customer/TransactionManagement/TransactionList/TransactionList";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faTrash,
-  faBackward,
-  faMoneyBill,
-} from "@fortawesome/free-solid-svg-icons";
 
 const CustomerTransaction = (props) => {
-  const { reducerAuthorization } = props;
-  const { accessToken } = reducerAuthorization.authentication;
-  const [validated, setValidated] = useState(false);
   const [usersData, setUsersData] = useState([]);
   const [transactionsData, setTransactionsData] = useState([]);
   const [step, setStep] = useState(0);
@@ -71,9 +60,7 @@ const CustomerTransaction = (props) => {
   console.log(currentUser);
   const getUserTransaction = async () => {
     await axios
-      .get(
-        `/api/protected/transactions/transaction/account/${currentUser.id}`
-      )
+      .get(`/api/protected/transactions/transaction/account/${currentUser.id}`)
       .then((result) => {
         return result.data.data;
       })

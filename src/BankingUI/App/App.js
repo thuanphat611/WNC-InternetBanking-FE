@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   BrowserRouter as Router,
   Switch,
@@ -24,13 +24,11 @@ const axiosInstance = axios.create();
 const App = (props) => {
   const {
     reducerAuthorization,
-    reducerUserNotification,
     setUserAccessToken,
     setIsAuthenticated,
     getAllInformation,
     setRole,
     getAllReceivers,
-    getAllTransactions,
     setUserRefreshToken,
     setAllNotification,
   } = props;
@@ -190,6 +188,7 @@ const App = (props) => {
       localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [localAccessToken, localRefreshToken]);
 
   // Check if accessToken is valid
@@ -221,7 +220,7 @@ const App = (props) => {
         });
       getNotificationHistory();
     }
-    if (localAccessToken == "undefined") {
+    if (localAccessToken === "undefined") {
       setIsAuthenticated(false);
       setUserAccessToken(null);
       setUserRefreshToken(null);
@@ -235,6 +234,7 @@ const App = (props) => {
       localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authentication.accessToken]);
 
   return (

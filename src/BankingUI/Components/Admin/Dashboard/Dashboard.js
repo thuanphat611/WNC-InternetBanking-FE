@@ -6,17 +6,16 @@ import { Link } from "react-router-dom";
 import "./Dashboard.css";
 
 const Dashboard = (props) => {
-  const { reducerAuthorization, reducerUserInformation } = props;
-  const { authentication } = reducerAuthorization;
-  const { balance, name } = reducerUserInformation.data;
+  const { reducerUserInformation } = props;
+  const { name } = reducerUserInformation.data;
   const mountedRef = useRef(true);
 
-  const formatter = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "VND",
-    minimumFractionDigits: 0,
-  });
-  const formattedBalance = formatter.format(balance);
+  // const formatter = new Intl.NumberFormat("en-US", {
+  //   style: "currency",
+  //   currency: "VND",
+  //   minimumFractionDigits: 0,
+  // });
+  // const formattedBalance = formatter.format(balance);
 
   useEffect(() => {
     return () => {

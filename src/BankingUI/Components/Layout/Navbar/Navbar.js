@@ -1,15 +1,13 @@
 import React from "react";
 import "./Navbar.css";
-import { Navbar, Nav, Button, Image } from "react-bootstrap";
+import { Navbar, Nav, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faPowerOff } from "@fortawesome/free-solid-svg-icons";
 
 const Header = (props) => {
-  const { reducerAuthorization, reducerUserInformation, setIsAuthenticated } =
-    props;
+  const { reducerAuthorization, setIsAuthenticated } = props;
   const { authentication } = reducerAuthorization;
-  const { name } = reducerUserInformation.data;
   console.log(authentication.role);
 
   const handleLogout = () => {
@@ -95,7 +93,7 @@ const Header = (props) => {
           </Nav.Link>
           <Nav.Link>
             <Link to="/statistics" className="text-light mr-2">
-              Statistics
+              External transaction
             </Link>
           </Nav.Link>
           {/* <Nav.Link>
