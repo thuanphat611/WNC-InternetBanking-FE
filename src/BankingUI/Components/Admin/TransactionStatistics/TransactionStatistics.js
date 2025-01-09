@@ -33,8 +33,8 @@ const TransactionStatistics = (props) => {
 
   const getList = async () => {
     await axios
-      .get(`/api/admin/transactions`)
-      .then((result) => result.data.data)
+      .get(`/api/protected/transactions/admin`)
+      .then((result) => result.data)
       .then((result) => {
         console.log(result);
         setTransactionsData(result);
@@ -50,7 +50,7 @@ const TransactionStatistics = (props) => {
     const fromDateUTC = new Date(range.fromDate);
     const toDateUTC = new Date(range.toDate);
     const newTransactionData = transactionsData.filter((item) => {
-      const createdAtDate = new Date(item.createdAt);
+      const createdAtDate = new Date(item.date);
       if (fromDateUTC <= createdAtDate && toDateUTC >= createdAtDate)
         return true;
       return false;
@@ -75,39 +75,50 @@ const TransactionStatistics = (props) => {
         </Space>
         <Table dataSource={filteredTransactionsData}>
           <Column
+            title="Sender account"
+            dataIndex="sendingAccount"
+            key="sendingAccount"
+          />
+          <Column
             title="Sent bank"
-            dataIndex="sentBankId"
-            key="sentBankId"
-            render={(sentBankId) => <>{getBankName(sentBankId)}</>}
+            dataIndex="sendBank"
+            key="sendBank"
+            render={(sendBank) => <>{getBankName(+sendBank)}</>}
             filters={[
-              { text: "DOMLand Bank", value: 0 },
-              { text: "3TBank", value: 1 },
-              { text: "BAOSON Bank", value: 2 },
+              { text: "DOMLand Bank", value: "0" },
+              { text: "Team3 Bank", value: "1" },
+              { text: "BAOSON Bank", value: "2" },
             ]}
-            onFilter={(value, record) => record.sentBankId === value}
+            onFilter={(value, record) => record.sendBank === value}
+          />
+          <Column
+            title="Receiver account"
+            dataIndex="receivingAccount"
+            key="receivingAccount"
           />
           <Column
             title="Received bank"
-            dataIndex="receivedBankId"
-            key="receivedBankId"
-            render={(receivedBankId) => <>{getBankName(receivedBankId)}</>}
+            dataIndex="receiveBank"
+            key="receiveBank"
+            render={(receiveBank) => <>{getBankName(+receiveBank)}</>}
             filters={[
-              { text: "DOMLand Bank", value: 0 },
-              { text: "3TBank", value: 1 },
-              { text: "BAOSON Bank", value: 2 },
+              { text: "DOMLand Bank", value: "0" },
+              { text: "Team3 Bank", value: "1" },
+              { text: "BAOSON Bank", value: "2" },
             ]}
-            onFilter={(value, record) => record.receivedBankId === value}
+            onFilter={(value, record) => record.receiveBank === value}
           />
           <Column
             title="Amount"
             key="amount"
             render={(row) => {
+              // let moneyDetail = `${formatter.format(row.amount)}`;
               let moneyDetail, badgeColor;
-              if (row.receivedBankId === 0) {
-                moneyDetail = `+ ${formatter.format(row.amount)}`;
+              if (row.receiveBank === "0") {
+                moneyDetail = `${formatter.format(row.amount)}`;
                 badgeColor = "#52c41a";
               } else {
-                moneyDetail = `- ${formatter.format(row.amount)}`;
+                moneyDetail = `${formatter.format(row.amount)}`;
                 badgeColor = "red";
               }
               return (
@@ -121,28 +132,11 @@ const TransactionStatistics = (props) => {
           />
           <Column
             title="Date"
-            key="createdAt"
+            key="date"
             render={(row) => {
-              return <>{new Date(row.createdAt).toUTCString()}</>;
+              return <>{new Date(row.date).toUTCString()}</>;
             }}
-            sorter={(a, b) => new Date(a.createdAt) - new Date(b.createdAt)}
-          />
-          <Column
-            title="Action"
-            key="action"
-            render={(item) => (
-              <Button
-                type="primary"
-                onClick={() => {
-                  setWorkingTransaction(
-                    Object.assign(workingTransaction, item)
-                  );
-                  setStep("transaction-detail");
-                }}
-              >
-                Detail
-              </Button>
-            )}
+            sorter={(a, b) => new Date(a.date) - new Date(b.date)}
           />
         </Table>
       </>
