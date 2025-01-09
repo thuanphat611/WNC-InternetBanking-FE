@@ -15,6 +15,7 @@ const TransactionStatistics = (props) => {
   const [transactionsData, setTransactionsData] = useState([]);
   const [filteredTransactionsData, setFilteredTransactionsData] = useState([]);
   const [step, setStep] = useState("table");
+  // eslint-disable-next-line no-unused-vars
   const [workingTransaction, setWorkingTransaction] = useState({
     sentUserId: "",
   });
@@ -65,7 +66,6 @@ const TransactionStatistics = (props) => {
         <Space className="mb-3">
           <RangePicker
             onChange={(dates, dateStrings) => {
-              console.log("hello: ", dates, dateStrings);
               range = { fromDate: dateStrings[0], toDate: dateStrings[1] };
             }}
           />
@@ -87,7 +87,7 @@ const TransactionStatistics = (props) => {
             filters={[
               { text: "DOMLand Bank", value: "0" },
               { text: "Team3 Bank", value: "1" },
-              { text: "BAOSON Bank", value: "2" },
+              { text: "Hoa Bank", value: "2" },
             ]}
             onFilter={(value, record) => record.sendBank === value}
           />
@@ -104,7 +104,7 @@ const TransactionStatistics = (props) => {
             filters={[
               { text: "DOMLand Bank", value: "0" },
               { text: "Team3 Bank", value: "1" },
-              { text: "BAOSON Bank", value: "2" },
+              { text: "Hoa Bank", value: "2" },
             ]}
             onFilter={(value, record) => record.receiveBank === value}
           />
@@ -136,7 +136,7 @@ const TransactionStatistics = (props) => {
             render={(row) => {
               return <>{new Date(row.date).toUTCString()}</>;
             }}
-            sorter={(a, b) => new Date(a.date) - new Date(b.date)}
+            // sorter={(a, b) => new Date(a.date) - new Date(b.date)}
           />
         </Table>
       </>
@@ -145,8 +145,8 @@ const TransactionStatistics = (props) => {
 
   return (
     <Container fluid>
-      <Row>
-        <Col md={{ span: 5, offset: 3 }} lg={6}>
+      <Row className="d-flex justify-content-center">
+        <Col lg={8  } className="d-flex justify-content-center">
           <Card className="mt-3">
             <Card.Header className="toolBar">CUSTOMER TRANSACTION</Card.Header>
             <Card.Body>

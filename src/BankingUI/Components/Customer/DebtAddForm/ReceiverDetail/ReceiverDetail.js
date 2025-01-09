@@ -113,7 +113,7 @@ const ReceiverDetail = (props) => {
                     <option value={-1}></option>
                     <option value={0}>DOMLand Bank</option>
                     <option value={1}>Ngân hàng Ba Tê</option>
-                    <option value={2}>BAOSON Bank</option>
+                    <option value={2}>Hoa Bank</option>
                   </Form.Control>
                 </Col>
                 <Form.Text className="text-muted font-weight-bold">
@@ -161,7 +161,7 @@ const ReceiverDetail = (props) => {
                           ? "DOMLand Bank"
                           : receiver.bankId === 1
                           ? "Ngân hàng Ba Tê"
-                          : "BAOSON Bank"}
+                          : "Hoa Bank"}
                       </td>
                       <td className="action">
                         <Button
@@ -241,7 +241,7 @@ const ReceiverDetail = (props) => {
                     <option value={-1}></option>
                     <option value={0}>DOMLand Bank</option>
                     <option value={1}>Ngân hàng Ba Tê</option>
-                    <option value={2}>BAOSON Bank</option>
+                    <option value={2}>Hoa Bank</option>
                   </Form.Control>
                 </Col>
               </Row>

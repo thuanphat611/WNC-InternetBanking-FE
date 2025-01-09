@@ -16,7 +16,7 @@ const TestMe = () => {
 	const handleClick = async (customerId) => {
 		if (!customerId) return;
 		const timeStamp = Date.now();
-		const partnerCode = "3TBank"; // SAPHASANBank
+		const partnerCode = "Team3 Bank"; // SAPHASANBank
 		const bodyJson = { accountNumber: customerId };
 		const signature = timeStamp + bodyJson + md5("dungnoiaihet");
 		await axios

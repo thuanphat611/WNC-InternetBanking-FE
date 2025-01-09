@@ -69,7 +69,7 @@ const RecommendAddReceiver = ({
               <option value={-1}></option>
               <option value={0}>DOMLand Bank</option>
               <option value={1}>Ngân hàng Ba Tê</option>
-              <option value={2}>BAOSON Bank</option>
+              <option value={2}>Hoa Bank</option>
             </Form.Control>
           </Col>
         </Row>
